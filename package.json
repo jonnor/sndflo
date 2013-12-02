@@ -1,0 +1,25 @@
+{
+    "name": "scflo",
+    "version": "0.0.1",
+    "description": "Flow-based programming runtime for SuperCollider",
+    "keywords": ["fbp", "noflo", "dataflow", "supercollider", "audio synthesis",
+        "signal processing"],
+    "author": "Jon Nordby <jononor@gmail.com> (http://www.jonnor.com)",
+    "repository" : { "type" : "git", "url" : "http://github.com/jonnor/scflo.git"},
+    "bugs": "http://github.com/jonnor/scflo/issues",
+    "license": "MIT",
+    "scripts":{
+        "test": "mocha --reporter spec"
+    },
+    "dependencies": {
+        "noflo": "~0.4.0",
+        "fbp": "~1.0.2",
+        "websocket": "~1.0.8",
+        "commander": "~2.1.0",
+        "pkginfo": "~0.3.0",
+        "osc-min": "~0.0.12"
+    },
+    "devDependencies": {
+        "mocha": "~1.13.0"
+    }
+}
