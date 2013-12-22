@@ -2,6 +2,12 @@
 // Adapter code between NoFlo WS/.JSON/.FBP protocol,
 // and the OSC protocol spoken by the SuperCollider runtime
 
+// FIXME: use CoffeScript instead of JavaScript
+// TODO: create an abstraction around node.js dependencies, so that this code can also run Chrome app
+// TODO: Create end-to-end tests using
+
+// TODO: figure out how we can stream audio to webapp from SuperCollider. WebRTC? RTP? WS+WebAudio
+
 var osc = require("osc-min");
 var udp = require("dgram");
 var http = require('http');

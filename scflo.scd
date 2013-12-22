@@ -25,6 +25,17 @@ b = Synth.new("help-notRand")
 
 
 // TODO: figure out how to wrap into components
+// Synth type components should always have their input and output busses configurable, so that they can be routed.
+// Two types of synth composition?
+// 1. Create a new synthdef based on ugens
+// 2. Wire together synths based on existing synthdefs
+
+// all synthdef components shall take their input/output buses as parameters. These can be annotated with 
+// name/description/type of the port/parameter. There exists some prior art around this, usually used to generate UIs
+
+// TODO: how to handle the short-lived synth instance usage, that seems prevalent in SuperCollider?
+// name of synthdef on one port, a trigger port to create instances? Maybe have a clear port, that can remove the instances?
+
 (
 var uGens = Dictionary[
     "SinOsc" -> SinOsc,

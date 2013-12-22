@@ -21,3 +21,27 @@ scalar attributes with different synth/node targets?
 If time is explicitly modelled, how to handle casual realtime events?
 Perhaps just timestamp the in-data, play event at timestamp+delay comp.
 Will one need both absolute and relative timebases (offsets).
+
+
+JACK and FBP
+--------------
+[JACK](http://jackaudio.org/) is a sound-server which can connect audio and MIDI between
+different processes. It is used by default with SuperCollider on Linux.
+Ideally one would be able to wire together JACK clients (like SC) from NoFlo
+
+JACK bindings
+* https://github.com/metachronica/node-jack-connector
+* http://sourceforge.net/projects/py-jack/
+
+Streaming
+* http://sourceforge.net/projects/jackrtp/
+* http://gstreamer.freedesktop.org/documentation/rtp.html
+* http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-jackaudiosink.html
+
+Random
+---------
+
+* https://trac.assembla.com/pkaudio/wiki/SuperCollider
+* https://pypi.python.org/pypi/SC/0.2
+
+
