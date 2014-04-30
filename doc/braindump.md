@@ -1,4 +1,16 @@
 
+The different architectural levels
+---------------------------
+
+There are several, very related, pieces of SuperCollider that are
+interesting to attempt to make available to FBP and Flowhub.
+From the most fine-grained to the most high-level:
+1. SynthDefs, composed of UGens 
+2. Synths, composed using Busses
+3. Patterns, composed of Streams and Events
+4. Inter-process audio pipelines, composed of multiple JACK clients
+
+
 Flow-based programming for algorithmic composition
 --------------------------------
 

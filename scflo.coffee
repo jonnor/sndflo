@@ -18,18 +18,20 @@ class WebSocketOscFbpAdapter extends EventEmitter
         @httpServer = http.createServer()
         @wsServer = new websocket.server { httpServer: @httpServer }
 
-        @wsServer.on 'request', (request) ->
+        @wsServer.on 'request', (request) =>
             connection = request.accept 'noflo', request.origin
-            connection.on 'message', (msg) ->
-                handleWsMessage connection, msg
+            connection.on 'message', (msg) =>
+                @handleWsMessage connection, msg
 
         @oscSockets =
             send: udp.createSocket "udp4"
             receive: udp.createSocket "udp4", @handleUdpMessage
 
+        @wsConnection = null  # FIXME: handle multiple
+
         # TODO: move out?
-        @receivePort = 57121
-        @sendPort = @receivePort+1
+        @sendPort = 57120
+        @receivePort = @sendPort+1
 
     start: (wsPort, callback) ->
         @oscSockets.receive.bind @receivePort
@@ -38,38 +40,56 @@ class WebSocketOscFbpAdapter extends EventEmitter
     stop: () ->
         # FIXME: reverse effects of start()
 
-    handleUdpMessage : (msg, rinfo) ->
+    handleUdpMessage: (msg, rinfo) =>
+
         try
             data = osc.fromBuffer msg
-            console.log "UDP receive: ", data
+            @handleOscMessage data
         catch err
             console.log "invalid OSC packet", err
 
-    handleWsMessage = (connection, message) ->
+    handleOscMessage: (data) ->
+        respond = (protocol, command, payload) =>
+            if not @wsConnection?
+                throw new Error 'No WebSocket connection!'
+            m = 
+                protocol: protocol
+                command: command
+                payload: payload
+            @wsConnection.send JSON.stringify m
+
+        address = data.address.split '/'
+        if address.length == 4 and address[0] == '' and address[1] == 'fbp'
+            payload = null
+            if data.args.length == 1 and data.args[0].type == 'string'
+                try
+                    payload = JSON.parse data.args[0].value
+                catch err
+                    console.log 'Invalid JSON received on OSC:', data.args[0].value
+            else
+                console.log 'Unexpected OSC arguments: ', data.args
+
+            respond address[2], address[3], payload
+        else
+            console.log 'Unexpected OSC address: ', data.address, address
+
+    handleWsMessage: (connection, message) ->
+        @wsConnection = connection
+
         if message.type == "utf8"
             #console.log "WS:", message
             msg = JSON.parse message.utf8Data
             path = "/fbp/" + msg.protocol + "/" + msg.command
             p = msg.payload
 
-            respond = (protocol, command, payload) ->
-                m = 
-                    protocol: protocol
-                    command: command
-                    payload: payload
-                connection.send JSON.stringify m
+
 
             # console.log path, p
-    
-            # FIXME: send to SC instead of faking
-            if path == '/fbp/runtime/getruntime'
-                respond 'runtime', 'runtime', {}
-            else if path == '/fbp/component/list'
-                respond 'component', 'component', {}
-
+  
             args = [ JSON.stringify msg.payload ]
             buf = osc.toBuffer { address: path, args: args }
-            #success = @oscSockets.send.send buf, 0, buf.length, outport, "localhost"
+
+            success = @oscSockets.send.send buf, 0, buf.length, @sendPort, "localhost"
         else
             console.log "Invalid WS message type", message.type
 
