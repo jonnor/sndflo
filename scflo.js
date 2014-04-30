@@ -2,6 +2,9 @@
 // Adapter code between NoFlo WS/.JSON/.FBP protocol,
 // and the OSC protocol spoken by the SuperCollider runtime
 
+
+// FIXME: Consider using http://automata.cc/osc-web ?
+
 // FIXME: use CoffeScript instead of JavaScript
 // TODO: create an abstraction around node.js dependencies, so that this code can also run Chrome app
 // TODO: Create end-to-end tests using

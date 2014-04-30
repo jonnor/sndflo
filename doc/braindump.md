@@ -22,12 +22,37 @@ If time is explicitly modelled, how to handle casual realtime events?
 Perhaps just timestamp the in-data, play event at timestamp+delay comp.
 Will one need both absolute and relative timebases (offsets).
 
+There are many strong parallels between algorithmic audio composition
+and generative visual design. More traditional "sequencing" type composition
+has parallels to animation and keyframing. So maybe some of the concepts and
+practices used in noflo-canvas and similar can be reappropriated?
+And of course, for combined audiovisual works, having both audio and visuals be
+created/driven the same way is a killer feature!
+
+
+Streaming to browser
+---------------------
+For an integrated solution in Flowhub, we need to be able to send the live sound stream
+over to the browser with low latency.
+We could send audio frames over WebSocket and stuff it directly into a WebAudio element.
+This would enable processing the stream also on the clientside with webaudio.
+
+As SuperCollider does not have WS support, perhaps a WebSocket bridge for JACK (as a client)
+would be a way to go. This would also enable other applications than SuperCollider to us it.
+Could be implemented using glib,libsoup and libjack?
+Or could have a C++ module for node.js, and use its WebSocket support..
+
+It is also useful in embedded interactive installations to be able to output both to
+From these perspectives, perhaps this runtime is more "audioflo" than specifically "scflo",
+and also include launching and wiring the various JACK clients needed?
+
+
 
 JACK and FBP
 --------------
 [JACK](http://jackaudio.org/) is a sound-server which can connect audio and MIDI between
 different processes. It is used by default with SuperCollider on Linux.
-Ideally one would be able to wire together JACK clients (like SC) from NoFlo
+Ideally one would be able to wire together JACK clients (like SC) from Flowhub
 
 JACK bindings
 * https://github.com/metachronica/node-jack-connector
