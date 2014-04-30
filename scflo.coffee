@@ -49,14 +49,27 @@ class WebSocketOscFbpAdapter extends EventEmitter
         if message.type == "utf8"
             #console.log "WS:", message
             msg = JSON.parse message.utf8Data
-            path = "/fbp" + msg.protocol + "/" + msg.command
+            path = "/fbp/" + msg.protocol + "/" + msg.command
             p = msg.payload
 
-            console.log path, p
+            respond = (protocol, command, payload) ->
+                m = 
+                    protocol: protocol
+                    command: command
+                    payload: payload
+                connection.send JSON.stringify m
+
+            # console.log path, p
+    
+            # FIXME: send to SC instead of faking
+            if path == '/fbp/runtime/getruntime'
+                respond 'runtime', 'runtime', {}
+            else if path == '/fbp/component/list'
+                respond 'component', 'component', {}
 
             args = [ JSON.stringify msg.payload ]
             buf = osc.toBuffer { address: path, args: args }
-            success = sendsock.send buf, 0, buf.length, outport, "localhost"
+            #success = @oscSockets.send.send buf, 0, buf.length, outport, "localhost"
         else
             console.log "Invalid WS message type", message.type
 
