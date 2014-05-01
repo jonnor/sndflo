@@ -29,11 +29,10 @@ class WebSocketOscFbpAdapter extends EventEmitter
 
         @wsConnection = null  # FIXME: handle multiple
 
-        # TODO: move out?
-        @sendPort = 57120
+    start: (wsPort, oscPort, callback) ->
+        @sendPort = oscPort
         @receivePort = @sendPort+1
 
-    start: (wsPort, callback) ->
         @oscSockets.receive.bind @receivePort
         @httpServer.listen wsPort, callback
 
@@ -96,9 +95,10 @@ class WebSocketOscFbpAdapter extends EventEmitter
 main = () ->
 
     wsPort = 3569
+    oscPort = 57120
 
     server = new WebSocketOscFbpAdapter()
-    server.start wsPort, (err) ->
+    server.start wsPort, oscPort, (err) ->
         if (err)
             throw err
         console.log "Listening at WebSocket port", wsPort,

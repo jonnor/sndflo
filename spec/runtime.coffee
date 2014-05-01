@@ -11,6 +11,7 @@ chai = require 'chai'
 
 scflo = require '../scflo.coffee'
 
+
 # XXX: duplicated from imgflo
 class MockUi extends EventEmitter
 
@@ -55,8 +56,8 @@ class MockUi extends EventEmitter
         else
             console.log 'UI received unknown message', d
 
-    connect: ->
-        @client.connect 'ws://localhost:3888/', "noflo"
+    connect: (port) ->
+        @client.connect "ws://localhost:#{port}/", "noflo"
     disconnect: ->
         #
 
@@ -74,17 +75,16 @@ class SuperColliderProcess
     constructor: ->
         @process = null
         @started = false
-        @debug = true
+        @debug = false
         @errors = []
 
-    start: (success) ->
-        # FIXME: actually start SC
+    start: (port, success) ->
         if @debug
             console.log 'Debug mode: setup runtime yourself!'
             return success 0
 
-        exec = './install/env.sh'
-        args = ['./install/bin/imgflo-runtime', '--port', '3888']
+        exec = 'sclang'
+        args = ['-u', port.toString(), 'scflo.scd']
         @process = child_process.spawn exec, args
         @process.on 'error', (err) ->
             throw err
@@ -100,37 +100,41 @@ class SuperColliderProcess
                 @errors.push err if err
 
         stdout = ""
-        @process.stdout.on 'data', (d) ->
-            if @debug
-                console.log d
+        @process.stdout.on 'data', (d) =>
             stdout += d.toString()
-            if stdout.indexOf 'running on port' != -1
+            if stdout.indexOf 'Receiving notification messages from server' != -1
                 if not @started
+                    errors = @popErrors()
+                    if errors.length > 0
+                        throw new Error 'Failed to start up: ' + errors.toString()
+
                     @started = true
                     success process.pid
 
     stop: ->
         if @debug
             return
-        #@process.kill()
+        @process.kill()
 
     popErrors: ->
         errors = @errors
         @errors = []
         return errors
 
+
+oscPort = 57230
+wsPort = 3888
+
 describe 'NoFlo runtime API,', () ->
     runtime = new SuperColliderProcess
     adapter = new scflo.Adapter
     ui = new MockUi
 
-    outfile = null
-
     before (done) ->
-        adapter.start 3888, (err) ->
+        adapter.start wsPort, oscPort, (err) ->
             throw err if err
-            runtime.start ->
-                ui.connect()
+            runtime.start oscPort, ->
+                ui.connect wsPort
                 ui.on 'connected', () ->
                     done()
     after ->

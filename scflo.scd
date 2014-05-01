@@ -1,7 +1,8 @@
-s.boot
+var getRuntime, listComponents;
 
-(
-var listComponents = { |msg, time, addr, recvPort|
+s.boot;
+
+listComponents = { |msg, time, addr, recvPort|
     "got message: ".post; msg.postln;
     a = NetAddr(addr.ip, recvPort+1);
     // TODO: send entire component list
@@ -9,11 +10,9 @@ var listComponents = { |msg, time, addr, recvPort|
 };
 OSCdef(\componentList).clear;
 OSCdef(\componentList, listComponents, "/fbp/component/list");
-)
 
 
-(
-var getRuntime = { |msg, time, addr, recvPort|
+getRuntime = { |msg, time, addr, recvPort|
     "got message: ".post; msg.postln;
     a = NetAddr(addr.ip, recvPort+1);
     // TODO: send actual data back
@@ -21,4 +20,3 @@ var getRuntime = { |msg, time, addr, recvPort|
 };
 OSCdef(\getRuntime).clear;
 OSCdef(\getRuntime, getRuntime, "/fbp/runtime/getruntime");
-)
