@@ -1,22 +1,45 @@
-var getRuntime, listComponents;
+var handleMessage, sendMessage;
 
-s.boot;
+//s.boot;
 
-listComponents = { |msg, time, addr, recvPort|
-    "got message: ".post; msg.postln;
-    a = NetAddr(addr.ip, recvPort+1);
-    // TODO: send entire component list
-    a.sendMsg("/fbp/component/component", "{}");
+// TODO: move code into one/more classes
+sendMessage = { |addr,protocol,command,payload|
+    var response = Dictionary[
+        "protocol" -> protocol,
+        "command" -> command,
+        "payload" -> payload
+    ];
+    var str = JSON.stringify(response);
+    "sending response: ".post; str.postln;
+    addr.sendMsg("/fbp/ui/message", str);
 };
-OSCdef(\componentList).clear;
-OSCdef(\componentList, listComponents, "/fbp/component/list");
 
+handleMessage = { |msg, time, addr, recvPort|
+    var ui = NetAddr(addr.ip, recvPort+1);
+    var m = msg[1].asString.parseYAML;
+    var protocol = m["protocol"];
+    var cmd = m["command"];
+    "got message: ".post; m.postln;
 
-getRuntime = { |msg, time, addr, recvPort|
-    "got message: ".post; msg.postln;
-    a = NetAddr(addr.ip, recvPort+1);
-    // TODO: send actual data back
-    a.sendMsg("/fbp/runtime/runtime", "{}");
+    case
+    { (protocol == "runtime" && cmd == "getruntime") }
+    {
+        var info = Dictionary[
+            "type" -> "scflo",
+            "version" -> "0.4", // protocol version
+            "capabilities" -> ["protocol:component"]
+        ];
+        sendMessage.value(ui, "runtime", "runtime", info);
+    }
+    { (protocol == "component" && cmd == "list") }
+    {
+        // TODO: actually respond with proper components
+        var info = Dictionary.new;
+        sendMessage.value(ui, "component", "component", info);
+    };
+
 };
-OSCdef(\getRuntime).clear;
-OSCdef(\getRuntime, getRuntime, "/fbp/runtime/getruntime");
+
+OSCdef(\handleMessage).clear;
+OSCdef(\handleMessage, handleMessage, "/fbp/runtime/message");
+

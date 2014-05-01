@@ -72,10 +72,10 @@ class MockUi extends EventEmitter
         @connection.sendUTF JSON.stringify msg
 
 class SuperColliderProcess
-    constructor: ->
+    constructor: (debug) ->
         @process = null
         @started = false
-        @debug = false
+        @debug = debug
         @errors = []
 
     start: (port, success) ->
@@ -120,13 +120,18 @@ class SuperColliderProcess
         errors = @errors
         @errors = []
         return errors
+    
 
-
+debug = false
 oscPort = 57230
 wsPort = 3888
 
+if process.env.SCFLO_DEBUG_TEST?
+    debug = true
+    oscPort = 57120
+
 describe 'NoFlo runtime API,', () ->
-    runtime = new SuperColliderProcess
+    runtime = new SuperColliderProcess debug
     adapter = new scflo.Adapter
     ui = new MockUi
 
@@ -150,7 +155,15 @@ describe 'NoFlo runtime API,', () ->
                 info = ui.runtimeinfo
                 chai.expect(info).to.be.an 'object'
                 done()
-        # FIXME: validate contents
+        it 'type should be "scflo"', ->
+            chai.expect(info.type).to.equal "scflo"
+        it 'protocol version should be "0.4"', ->
+            chai.expect(info.version).to.be.a "string"
+            chai.expect(info.version).to.equal "0.4"
+        it 'capabilities should be include "protocol:component"', ->
+            chai.expect(info.capabilities).to.be.an "array"
+            chai.expect(info.capabilities.length).to.equal 1
+            chai.expect((info.capabilities.filter -> 'protocol:component')[0]).to.be.a "string"
 
     describe 'sending component list', ->
         it 'should return components', (done) ->

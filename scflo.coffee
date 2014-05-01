@@ -48,46 +48,36 @@ class WebSocketOscFbpAdapter extends EventEmitter
             console.log "invalid OSC packet", err
 
     handleOscMessage: (data) ->
-        respond = (protocol, command, payload) =>
+        respond = (m) =>
             if not @wsConnection?
                 throw new Error 'No WebSocket connection!'
-            m = 
-                protocol: protocol
-                command: command
-                payload: payload
             @wsConnection.send JSON.stringify m
 
-        address = data.address.split '/'
-        if address.length == 4 and address[0] == '' and address[1] == 'fbp'
-            payload = null
+        if data.address == '/fbp/ui/message'
             if data.args.length == 1 and data.args[0].type == 'string'
+                # Note: We could just have sent the JSON encoded string on, but
+                # right now decode and re-encode it to be able to detect errors earlier
+                msg = null
                 try
-                    payload = JSON.parse data.args[0].value
+                    msg = JSON.parse data.args[0].value
                 catch err
                     console.log 'Invalid JSON received on OSC:', data.args[0].value
+
+                respond msg
             else
                 console.log 'Unexpected OSC arguments: ', data.args
 
-            respond address[2], address[3], payload
         else
-            console.log 'Unexpected OSC address: ', data.address, address
+            console.log 'Unexpected OSC address: ', data.address
 
     handleWsMessage: (connection, message) ->
         @wsConnection = connection
 
         if message.type == "utf8"
-            #console.log "WS:", message
             msg = JSON.parse message.utf8Data
-            path = "/fbp/" + msg.protocol + "/" + msg.command
-            p = msg.payload
-
-
-
-            # console.log path, p
-  
-            args = [ JSON.stringify msg.payload ]
+            path = "/fbp/runtime/message"
+            args = [ JSON.stringify msg ]
             buf = osc.toBuffer { address: path, args: args }
-
             success = @oscSockets.send.send buf, 0, buf.length, @sendPort, "localhost"
         else
             console.log "Invalid WS message type", message.type
