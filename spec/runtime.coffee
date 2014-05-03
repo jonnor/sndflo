@@ -84,7 +84,7 @@ class SuperColliderProcess
             return success 0
 
         exec = 'sclang'
-        args = ['-u', port.toString(), 'scflo.scd']
+        args = ['-u', port.toString(), 'sndflo-runtime.scd']
         @process = child_process.spawn exec, args
         @process.on 'error', (err) ->
             throw err
