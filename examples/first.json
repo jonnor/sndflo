@@ -1,0 +1,49 @@
+{
+  "processes": {
+    "gen": {
+      "component": "SquareWave"
+    },
+    "f": {
+      "component": "LowPassFilter"
+    },
+    "out": {
+      "component": "AudioOut"
+    }
+  },
+  "connections": [
+    {
+      "src": {
+        "process": "gen",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "f",
+        "port": "in"
+      }
+    },
+    {
+      "src": {
+        "process": "f",
+        "port": "out"
+      },
+      "tgt": {
+        "process": "out",
+        "port": "in"
+      }
+    },
+    {
+      "data": "440",
+      "tgt": {
+        "process": "gen",
+        "port": "freq"
+      }
+    },
+    {
+      "data": "2000",
+      "tgt": {
+        "process": "f",
+        "port": "freq"
+      }
+    }
+  ]
+}
