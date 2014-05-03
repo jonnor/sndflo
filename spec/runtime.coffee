@@ -155,8 +155,8 @@ describe 'NoFlo runtime API,', () ->
                 info = ui.runtimeinfo
                 chai.expect(info).to.be.an 'object'
                 done()
-        it 'type should be "scflo"', ->
-            chai.expect(info.type).to.equal "scflo"
+        it 'type should be "sndflo"', ->
+            chai.expect(info.type).to.equal "sndflo"
         it 'protocol version should be "0.4"', ->
             chai.expect(info.version).to.be.a "string"
             chai.expect(info.version).to.equal "0.4"
@@ -166,9 +166,33 @@ describe 'NoFlo runtime API,', () ->
             chai.expect((info.capabilities.filter -> 'protocol:component')[0]).to.be.a "string"
 
     describe 'sending component list', ->
-        it 'should return components', (done) ->
+        it 'should return at least 3 components', (done) ->
             ui.send "component", "list"
             ui.on 'component-added', (name, definition) ->
+                numberOfComponents = Object.keys(ui.components).length
+                if numberOfComponents == 3
+                    done()
+        it 'should contain AudioOut', ->
+            chai.expect(ui.components['synth/AudioOut']).to.be.an 'object'
+
+        describe 'AudioOut component', ->
+            component = 'synth/AudioOut'
+            it 'should have a "in" bus port', ->
+                input = ui.components[component].inPorts.filter (p) -> p.id == 'in'
+                chai.expect(input.length).to.equal 1
+                chai.expect(input[0].type).to.equal "bus"
+            it 'should have icon "fa-music"', ->
+                chai.expect(ui.components[component].icon).to.equal 'music'
+            it 'should have description', ->
+                chai.expect(ui.components[component].description).to.equal 'Play out on soundcard'
+
+    describe 'building graph', ->
+        # FIXME: actually build
+        it '', (done) ->
+            ui.send "graph", "addnode", {}
+
+            ui.send "runtime", "getruntime"
+            ui.once 'runtime-info-changed', () ->
                 done()
-        # FIXME: validate contents
+
 
