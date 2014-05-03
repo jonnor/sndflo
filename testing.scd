@@ -21,16 +21,9 @@ SynthDef("AudioOut", {
 n = Dictionary.new();
 g = "examples/first.json".parseYAMLFile();
 
-// FIXME: figure out why bus wiring is order dependent!
-/*
-g["processes"].keysValuesDo({ |key,value|
-    n[key] = Synth.new(value["component"], [], s, \addToTail);
-});
-*/
 // TODO: use newPaused(), and use node.run() on network start
-["out", "f", "gen"].do({ |id|:
-    var value = g["processes"][id];
-    n[id] =  Synth.new(value["component"]).postln;
+g["processes"].keysValuesDo({ |key,value|
+    n[key] = Synth.new(value["component"]);
 });
 
 g["connections"].do({ |conn,idx|
@@ -46,6 +39,8 @@ g["connections"].do({ |conn,idx|
         // Connect edge, by using same Bus number (avoiding the harware ones)
         n[srcNode].set(srcPort.asSymbol, 10+idx);
         n[tgtNode].set(tgtPort.asSymbol, 10+idx);
+        // Modify order-of-executioon so that target can hear source
+        n[tgtNode].moveAfter(n[srcNode]);
     }, {
        var data = conn["data"];
        "IIP: '%' -> % %\n".postf(data, tgtPort, tgtNode);
