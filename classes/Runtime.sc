@@ -41,7 +41,7 @@ SndFloUiConnection : Object {
 SndFloRuntime : Object {
     var connection;
     var library;
-    var network;
+    var <network;
 
     *new { arg server, listenAddr;
         ^super.new.init(server,listenAddr)
@@ -138,11 +138,13 @@ SndFloRuntime : Object {
         { (protocol == "network" && cmd == "start") }
         {
             // TODO: include timestamp
+            network.start(true);
             connection.sendMessage("network", "started", Dictionary.new);
         }
         { (protocol == "network" && cmd == "stop") }
         {
             // TODO: include timestamp
+            network.start(false);
             connection.sendMessage("network", "stopped", Dictionary.new);
         }
         { true /*default*/ }

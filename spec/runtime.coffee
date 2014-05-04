@@ -204,13 +204,16 @@ describe 'NoFlo runtime API,', () ->
 
     describe 'starting the network', ->
         it 'should respond with network started', (done) ->
-            ui.send "network", "start"
-            ui.once 'network-running', (running) ->
-                done() if running
+            setTimeout ->
+                ui.send "network", "start"
+                ui.once 'network-running', (running) ->
+                    done() if running
+            , 100
 
     describe 'stopping the network', ->
         it 'should respond with network stopped', (done) ->
-            ui.send "network", "stop"
-            ui.once 'network-running', (running) ->
-                done() if not running
-
+            setTimeout ->
+                ui.send "network", "stop"
+                ui.once 'network-running', (running) ->
+                    done() if not running
+            , 300

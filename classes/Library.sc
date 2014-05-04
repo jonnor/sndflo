@@ -14,6 +14,7 @@ SndFloLibrary {
 
     registerSynthDef { arg id, def;
         synthdefs["synth/"++id] = def;
+        def.send(server);
     }
 
     registerDefaults {

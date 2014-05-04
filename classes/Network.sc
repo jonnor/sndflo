@@ -10,12 +10,13 @@ SndFloGraph : Object {
     init {
         nodes = Dictionary.new;
         connections = Array;
-        nextBusNumber = 10; // Avoid hardware busses. FIXME: unhardcode
+        nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
     }
 
     addNode { arg id, component;
-        var name = library.synthdefs[component];
-        nodes[id] = Synth.newPaused(name);
+        var d = library.synthdefs[component];
+        "%(%)\n".postf(id, d.name);
+        nodes[id] = Synth.newPaused(d.name);
     }
     removeNode { arg id;
         "FIXME: removeNode NOT IMPLEMENTED".postln;
