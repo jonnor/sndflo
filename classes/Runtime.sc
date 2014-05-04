@@ -32,7 +32,7 @@ SndFloUiConnection : Object {
     }
 
     handleMessage { arg protocol, cmd, payload;
-        "handleMessage :".post; protocol.post; cmd.postln;
+        "handleMessage :\n".postf(protocol, cmd);
         on_message.value(protocol, cmd, payload);
     }
 }
@@ -41,6 +41,7 @@ SndFloUiConnection : Object {
 SndFloRuntime : Object {
     var connection;
     var library;
+    var network;
 
     *new { arg server, listenAddr;
         ^super.new.init(server,listenAddr)
@@ -82,7 +83,7 @@ SndFloRuntime : Object {
                     ];
                     // TODO: support multiple out-ports
                     // FIXME: use something better than heuristics to determine out ports
-                    if (control.name == "out", {
+                    if (control.name.asString == "out", {
                         outPorts.add(p);
                     }, {
                         inPorts.add(p);
@@ -102,9 +103,51 @@ SndFloRuntime : Object {
                 connection.sendMessage("component", "component", info);
             });
         }
+        { (protocol == "graph" && cmd == "clear") }
+        {
+            network = SndFloNetwork.new();
+            network.graph.library = library;
+        }
+        { (protocol == "graph" && cmd == "addnode") }
+        {
+            network.graph.addNode(payload["id"], payload["component"]);
+        }
+        { (protocol == "graph" && cmd == "removenode") }
+        {
+            network.graph.removeNode(payload["id"]);
+        }
+        { (protocol == "graph" && cmd == "addinitial") }
+        {
+            network.graph.addIIP(payload["tgt"]["node"], payload["tgt"]["port"],
+                payload["src"]["data"]);
+        }
+        { (protocol == "graph" && cmd == "removeinitial") }
+        {
+            network.graph.removeIIP(payload["tgt"]["node"], payload["tgt"]["port"]);
+        }
+        { (protocol == "graph" && cmd == "addedge") }
+        {
+            network.graph.addEdge(payload["src"]["node"], payload["src"]["port"],
+                payload["tgt"]["node"], payload["tgt"]["port"]);
+        }
+        { (protocol == "graph" && cmd == "removeedge") }
+        {
+            network.graph.removeEdge(payload["src"]["node"], payload["src"]["port"],
+                payload["tgt"]["node"], payload["tgt"]["port"]);
+        }
+        { (protocol == "network" && cmd == "start") }
+        {
+            // TODO: include timestamp
+            connection.sendMessage("network", "started", Dictionary.new);
+        }
+        { (protocol == "network" && cmd == "stop") }
+        {
+            // TODO: include timestamp
+            connection.sendMessage("network", "stopped", Dictionary.new);
+        }
         { true /*default*/ }
         {
-            "Unhandled message from UI: procotol=%, cmd=%".postf(protocol, cmd);
+            "Unhandled message from UI: procotol=%, cmd=%\n".postf(protocol, cmd);
         };
 
     }

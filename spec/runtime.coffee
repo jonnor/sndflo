@@ -187,12 +187,30 @@ describe 'NoFlo runtime API,', () ->
                 chai.expect(ui.components[component].description).to.equal 'Play out on soundcard'
 
     describe 'building graph', ->
-        # FIXME: actually build
-        it '', (done) ->
-            ui.send "graph", "addnode", {}
+        # TODO: find a way to verify results. Output to file?
+        it 'should not crash', (done) ->
+            ui.send "graph", "clear"
+            ui.send "graph", "addnode", {id: 'in', component: 'synth/SawWave'}
+            ui.send "graph", "addnode", {id: 'filter', component: 'synth/LowPassFilter'}
+            ui.send "graph", "addnode", {id: 'out', component: 'synth/AudioOut'}
+            ui.send "graph", "addedge", {src: {node: 'in', port: 'out'}, tgt: {node: 'filter', port: 'in'}}
+            ui.send "graph", "addedge", {src: {node: 'filter', port: 'out'}, tgt: {node: 'out', port: 'in'}}
+            ui.send "graph", "addinitial", {src: {data: 220}, tgt: {node: 'in', port: 'freq'}}
+            ui.send "graph", "addinitial", {src: {data: 330}, tgt: {node: 'filter', port: 'freq'}}
 
             ui.send "runtime", "getruntime"
-            ui.once 'runtime-info-changed', () ->
+            ui.once 'runtime-info-changed', ->
                 done()
 
+    describe 'starting the network', ->
+        it 'should respond with network started', (done) ->
+            ui.send "network", "start"
+            ui.once 'network-running', (running) ->
+                done() if running
+
+    describe 'stopping the network', ->
+        it 'should respond with network stopped', (done) ->
+            ui.send "network", "stop"
+            ui.once 'network-running', (running) ->
+                done() if not running
 

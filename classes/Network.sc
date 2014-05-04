@@ -1,6 +1,7 @@
 SndFloGraph : Object {
     var <nodes;
     var <connections;
+    var <>library;
     var nextBusNumber;
 
     *new {
@@ -13,8 +14,13 @@ SndFloGraph : Object {
     }
 
     addNode { arg id, component;
-        nodes[id] = Synth.newPaused(component);
+        var name = library.synthdefs[component];
+        nodes[id] = Synth.newPaused(name);
     }
+    removeNode { arg id;
+        "FIXME: removeNode NOT IMPLEMENTED".postln;
+    }
+
     addEdge { arg srcId, srcPort, tgtId, tgtPort;
         // TODO: recycle busses when edges using it is removed
         var busForEdge = nextBusNumber;
@@ -28,16 +34,23 @@ SndFloGraph : Object {
         // Modify order-of-executioon so that target can hear source
         nodes[tgtId].moveAfter(nodes[srcId]);
     }
+    removeEdge { arg srcId, srgPort, tgtId, tgtPort;
+        "FIXME: removeEdge NOT IMPLEMENTED".postln;
+    }
+
     addIIP { arg tgtId, tgtPort, data;
         "IIP: '%' -> % %\n".postf(data, tgtPort.toUpper, tgtId);
         // TODO: support other data than floats
         nodes[tgtId].set(tgtPort.asSymbol, data.asFloat);
     }
+    removeIIP { arg tgtId, tgtPort;
+        "FIXME: removeIIP NOT IMPLEMENTED".postln;
+    }
 }
 
 
 SndFloNetwork : Object {
-    var graph;
+    var <graph;
 
     *new {
         ^super.new.init
