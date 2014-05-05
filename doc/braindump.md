@@ -10,6 +10,12 @@ From the most fine-grained to the most high-level:
 3. Patterns, composed of Streams and Events
 4. Inter-process audio pipelines, composed of multiple JACK clients
 
+1) Can be implemented using the [Synth Definition File Format](http://doc.sccode.org/Reference/Synth-Definition-File-Format.html).
+
+2) WIP, implemented in sclang as SuperCollider classes.
+Could also be implemented by sending OSC node control messages to scsynth directly.
+
+3) Implementation strategy unknown
 
 Flow-based programming for algorithmic composition
 --------------------------------

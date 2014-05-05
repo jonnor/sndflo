@@ -1,21 +1,32 @@
 Data-flow programming for SuperCollider?
 ========================================
-This is an experiemental research project, exploring if and how one
+This is an experimental project, exploring how one
 can program [SuperCollider](http://supercollider.sourceforge.net) using
-[NoFlo UI](http://www.noflojs.org). This will hopefully allow to do
+[Flowhub](http://flowhub.io). This will hopefully allow to do
 audio synthesis, sound processing and algorithmic using a visual data-flow
 programming model.
 
 Status
 ------
-Wild idea
+Proof-of-concept working for wiring up Synth's.
 
-TODO
------
-* Write a simple WebSocket -> OSC bridge for NoFlo protocol (Node.JS)
-* Figure out how to programatically list available UGens and Patterns
-* Come up with a datastructure for components, nodes and graphsnet
 
-Milestones
-------------
-* 0.0.1: Can create a synthdef composed of a couple of UGens, and play a synth using a simple Event or Pattern
+Vision
+---------
+* Program audio pipelines visually, by Synth's wiring together with Busses
+* Program synths visually, by creating SynthDefs by combining UGens
+* Do not replace sclang, integrate with it
+    * Allow to use SynthDefs created in sclang in visual pipelines
+    * Allow to drive visually created Synth pipelines using sclang Events/Patterns
+* Seamless integration with other FBP
+    * MicroFlo for communicating with microcontrollers (sensing/acting)
+    * NoFlo for general-purpose use, and generating composition/scores
+* Program scores visually, using Streams and Patterns
+
+
+Running
+--------
+Only for the foolhardy so far :)
+
+* Symlink the git repo into your extensions directory
+* See the files sndflo-runtime.scd and scflo.js
