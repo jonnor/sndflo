@@ -21,8 +21,15 @@ Vision
 * Seamless integration with other FBP
     * MicroFlo for communicating with microcontrollers (sensing/acting)
     * NoFlo for general-purpose use, and generating composition/scores
+    * Combined audio processing with [noflo-webaudio](https://github.com/automata/noflo-webaudio)
 * Program scores visually, using Streams and Patterns
 
+Usecases
+-------
+* Generative & algorithmic composed music
+* Reactive and interactive art installations
+* Audio effect pipelines, processing sound inputs
+* Audio and music analysis, feature extraction
 
 Running
 --------
