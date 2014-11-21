@@ -72,11 +72,12 @@ class MockUi extends EventEmitter
         @connection.sendUTF JSON.stringify msg
 
 class SuperColliderProcess
-    constructor: (debug) ->
+    constructor: (debug, verbose) ->
         @process = null
         @started = false
         @debug = debug
         @errors = []
+        @verbose = verbose
 
     start: (port, success) ->
         if @debug
@@ -93,6 +94,7 @@ class SuperColliderProcess
                 throw new Error 'Runtime exited with non-zero code: ' + code
 
         @process.stderr.on 'data', (d) =>
+            console.log d.toString() if @verbose
             output = d.toString()
             lines = output.split '\n'
             for line in lines
@@ -101,6 +103,7 @@ class SuperColliderProcess
 
         stdout = ""
         @process.stdout.on 'data', (d) =>
+            console.log d.toString() if @verbose
             stdout += d.toString()
             if stdout.indexOf 'Receiving notification messages from server' != -1
                 if not @started
@@ -126,12 +129,14 @@ debug = false
 oscPort = 57230
 wsPort = 3888
 
-if process.env.SCFLO_DEBUG_TEST?
+if process.env.SCFLO_TESTS_DEBUG?
     debug = true
     oscPort = 57120
 
-describe 'NoFlo runtime API,', () ->
-    runtime = new SuperColliderProcess debug
+verbose = process.env.SCFLO_TESTS_VERBOSE?
+
+describe 'FBP runtime API,', () ->
+    runtime = new SuperColliderProcess debug, verbose
     adapter = new scflo.Adapter
     ui = new MockUi
 

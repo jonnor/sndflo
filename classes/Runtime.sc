@@ -32,7 +32,7 @@ SndFloUiConnection : Object {
     }
 
     handleMessage { arg protocol, cmd, payload;
-        "handleMessage :\n".postf(protocol, cmd);
+        "handleMessage: % %\n".postf(protocol, cmd);
         on_message.value(protocol, cmd, payload);
     }
 }
