@@ -37,7 +37,6 @@ describe 'FBP runtime API,', () ->
     describe 'runtime info', ->
         info = null
         it 'should be returned on getruntime', (done) ->
-            @timeout 6000
             ui.send "runtime", "getruntime"
             ui.once 'runtime-info-changed', () ->
                 info = ui.runtimeinfo
@@ -55,6 +54,41 @@ describe 'FBP runtime API,', () ->
             chai.expect(info.capabilities).to.include 'protocol:graph'
         it 'capabilities should include "protocol:network"', ->
             chai.expect(info.capabilities).to.include 'protocol:network'
+        it 'capabilities should include "protocol:runtime"', ->
+            chai.expect(info.capabilities).to.include 'protocol:runtime'
+
+    describe 'initial ports information', ->
+        info = null
+        it 'should be returned on getruntime', (done) ->
+            ui.send "runtime", "getruntime"
+            ui.once 'runtime-ports-changed', (i) ->
+                info = i
+                chai.expect(info).to.be.an 'object'
+                done()
+        it 'should have intial graph', ->
+            chai.expect(info.graph).to.equal 'default/main'
+        it 'should have inports', ->
+            chai.expect(info.inPorts).to.be.an 'array'
+            chai.expect(info.inPorts).to.have.length 1
+        it 'should have outports', ->
+            chai.expect(info.outPorts).to.be.an 'array'
+            chai.expect(info.outPorts).to.have.length 1
+
+    describe.skip 'sending packet in', ->
+        graphName = 'default/main'
+        it 'gives packet out', (done) ->
+            ui.on 'runtime-packet', (data) ->
+                chai.expect(data.event).to.equal 'data'
+                chai.expect(data.graph).to.equal graphName
+                chai.expect(data.port).to.equal 'output'
+                chai.expect(data.payload).to.contain 'http://localhost'
+                chai.expect(data.payload).to.contain '/process'
+                done()
+            ui.send 'runtime', 'packet',
+                event: 'data'
+                graph: graphName
+                port: 'x'
+                payload: 32
 
     describe 'sending component list', ->
         it 'should return at least 3 components', (done) ->
