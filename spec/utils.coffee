@@ -85,6 +85,7 @@ class SuperColliderProcess
         args = ['-u', port.toString(), 'sndflo-runtime.scd']
         args.push @graph if @graph
 
+        console.log exec, args.join ' ' if @verbose
         @process = child_process.spawn exec, args
         @process.on 'error', (err) ->
             throw err
