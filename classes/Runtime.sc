@@ -66,7 +66,9 @@ SndFloRuntime : Object {
             var info = Dictionary[
                 "type" -> "sndflo",
                 "version" -> "0.4", // protocol version
-                "capabilities" -> ["protocol:component"]
+                "capabilities" -> ["protocol:component",
+                    "protocol:network",
+                    "protocol:graph"]
             ];
             connection.sendMessage("runtime", "runtime", info);
         }
