@@ -1,3 +1,7 @@
+//     sndflo - Flowhub.io sound processing runtime based on SuperCollider
+//     (c) 2014 Jon Nordby
+//     sndflo may be freely distributed under the MIT license
+
 SndFloUiConnection : Object {
     var receiveOscFunc;
     var uiAddr;
