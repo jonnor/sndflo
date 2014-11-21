@@ -45,7 +45,18 @@ SndFloGraph : Object {
         nodes[tgtId].set(tgtPort.asSymbol, data.asFloat);
     }
     removeIIP { arg tgtId, tgtPort;
-        "FIXME: removeIIP NOT IMPLEMENTED".postln;
+        // sets back default value
+        var tgtNode, component, definition, specs, defaultValue;
+        tgtNode = nodes[tgtId];
+        if (tgtNode.notNil, {
+            component = "synth/"++tgtNode.defName;
+            definition = library.synthdefs[component];
+            specs = definition.metadata.specs;
+            defaultValue = specs[tgtPort.asSymbol].default;
+            tgtNode.set(tgtPort.asSymbol, defaultValue);
+
+            "DEL IIP -> % %\n".postf(tgtPort.toUpper, tgtId);
+        });
     }
 }
 
