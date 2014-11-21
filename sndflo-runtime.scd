@@ -1,7 +1,8 @@
-var run = {
-    "starting".postln;
+var f = {
+    "sndflo-runtime STAAAAAAAAARTING".postln;
     r = SndFloRuntime.new(s, NetAddr.localAddr);
-    NetAddr.localAddr;
+
+    "sndflo-runtime running on port %".postf(NetAddr.localAddr.port);
 
     if (thisProcess.argv.size == 1, {
         // Load first arg as default graph
@@ -13,5 +14,9 @@ var run = {
 };
 
 Server.killAll();
-run.value;
-//s.waitForBoot(run);
+Task.new({
+    1.wait;
+    //s.waitForBoot(f);
+    s.boot;
+    s.doWhenBooted(f);
+}).play;

@@ -93,9 +93,11 @@ class SuperColliderProcess
             if code != 0
                 throw new Error 'Runtime exited with non-zero code: ' + code + ' :' +signal
 
+        stderr = ""
         @process.stderr.on 'data', (d) =>
             console.log d.toString() if @verbose
             output = d.toString()
+            stderr += output
             lines = output.split '\n'
             for line in lines
                 err = line.trim()
@@ -105,14 +107,16 @@ class SuperColliderProcess
         @process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
             stdout += d.toString()
-            if stdout.indexOf 'Receiving notification messages from server' != -1
+            readyString = 'sndflo-runtime running on port'
+            failString = 'ERROR: server failed to start'
+            if stdout.indexOf(readyString) != -1
                 if not @started
                     errors = @popErrors()
-                    if errors.length > 0
-                        throw new Error 'Failed to start up: ' + errors.toString()
 
                     @started = true
                     success process.pid
+            if stdout.indexOf(failString) != -1 or stderr.indexOf(failString) != -1
+                throw new Error 'Failed to start up'
 
     stop: ->
         if @debug

@@ -22,6 +22,7 @@ describe 'FBP runtime API,', () ->
     adapter = new scflo.Adapter
 
     before (done) ->
+        @timeout 6000
         adapter.start wsPort, oscPort, (err) ->
             throw err if err
             runtime.start oscPort, ->
@@ -36,6 +37,7 @@ describe 'FBP runtime API,', () ->
     describe 'runtime info', ->
         info = null
         it 'should be returned on getruntime', (done) ->
+            @timeout 6000
             ui.send "runtime", "getruntime"
             ui.once 'runtime-info-changed', () ->
                 info = ui.runtimeinfo
