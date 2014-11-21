@@ -19,7 +19,8 @@ class WebSocketOscFbpAdapter extends EventEmitter
         @wsServer = new websocket.server { httpServer: @httpServer }
 
         @wsServer.on 'request', (request) =>
-            connection = request.accept 'noflo', request.origin
+            subProtocol = if (request.requestedProtocols.indexOf("noflo") isnt -1) then "noflo" else null
+            connection = request.accept subProtocol, request.origin
             connection.on 'message', (msg) =>
                 @handleWsMessage connection, msg
 
