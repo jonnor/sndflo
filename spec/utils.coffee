@@ -68,12 +68,13 @@ class MockUi extends EventEmitter
 
 
 class SuperColliderProcess
-    constructor: (debug, verbose) ->
+    constructor: (debug, verbose, graph) ->
         @process = null
         @started = false
         @debug = debug
         @errors = []
         @verbose = verbose
+        @graph = graph
 
     start: (port, success) ->
         if @debug
@@ -82,12 +83,14 @@ class SuperColliderProcess
 
         exec = 'sclang'
         args = ['-u', port.toString(), 'sndflo-runtime.scd']
+        args.push @graph if @graph
+
         @process = child_process.spawn exec, args
         @process.on 'error', (err) ->
             throw err
         @process.on 'exit', (code, signal) ->
             if code != 0
-                throw new Error 'Runtime exited with non-zero code: ' + code
+                throw new Error 'Runtime exited with non-zero code: ' + code + ' :' +signal
 
         @process.stderr.on 'data', (d) =>
             console.log d.toString() if @verbose
