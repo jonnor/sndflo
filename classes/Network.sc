@@ -19,7 +19,8 @@ SndFloGraph : Object {
         nodes[id] = Synth.newPaused(d.name);
     }
     removeNode { arg id;
-        "FIXME: removeNode NOT IMPLEMENTED".postln;
+        nodes[id] = nil;
+        "DEL %()".postf(id);
     }
 
     addEdge { arg srcId, srcPort, tgtId, tgtPort;
@@ -35,8 +36,12 @@ SndFloGraph : Object {
         // Modify order-of-executioon so that target can hear source
         nodes[tgtId].moveAfter(nodes[srcId]);
     }
-    removeEdge { arg srcId, srgPort, tgtId, tgtPort;
-        "FIXME: removeEdge NOT IMPLEMENTED".postln;
+    removeEdge { arg srcId, srcPort, tgtId, tgtPort;
+        "DEL % % -> % %\n".postf(srcId, srcPort.toUpper, tgtPort.toUpper, tgtId);
+        nodes[srcId].post; nodes[tgtId].postln;
+
+        nodes[srcId].set(srcPort.asSymbol, SndFloLibrary.silentOut);
+        nodes[tgtId].set(tgtPort.asSymbol, SndFloLibrary.silentIn);
     }
 
     addIIP { arg tgtId, tgtPort, data;

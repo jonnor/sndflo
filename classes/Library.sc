@@ -12,6 +12,9 @@ SndFloLibrary {
         this.registerDefaults();
     }
 
+    *silentIn { ^12; }
+    *silentOut { ^13; }
+
     registerSynthDef { arg id, def;
         synthdefs["synth/"++id] = def;
         def.send(server);
@@ -20,7 +23,7 @@ SndFloLibrary {
     registerDefaults {
         var defs = [
             SynthDef("SawWave", {
-                arg out=12, freq=440;
+                arg out=SndFloLibrary.silentOut, freq=440;
                 Out.ar(out, Saw.ar(freq))
             },
                 metadata: (
@@ -32,7 +35,7 @@ SndFloLibrary {
             )
             ,
             SynthDef("LowPassFilter", {
-                arg in=11, out=14, freq=4400;
+                arg in=SndFloLibrary.silentIn, out=SndFloLibrary.silentOut, freq=4400;
                 Out.ar(out, BLowPass.ar(In.ar(in), freq))
             },
                 metadata: (
@@ -44,7 +47,7 @@ SndFloLibrary {
             )
             ,
             SynthDef("AudioOut", {
-                arg in=13, out=0;
+                arg in=SndFloLibrary.silentIn, out=0;
                 Out.ar(out, In.ar(in))
             },
                 metadata: (
