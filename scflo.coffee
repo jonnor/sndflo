@@ -1,3 +1,7 @@
+#     sndflo - Flowhub.io sound processing runtime based on SuperCollider
+#     (c) 2014 Jon Nordby
+#     sndflo may be freely distributed under the MIT license
+
 # Adapter code between NoFlo WS/.JSON/.FBP protocol,
 # and the OSC protocol spoken by the SuperCollider runtime
 
