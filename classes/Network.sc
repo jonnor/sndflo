@@ -5,13 +5,15 @@
 SndFloGraph : Object {
     var <nodes;
     var <connections;
-    var <>library;
+    var <library;
     var nextBusNumber;
 
-    *new {
-        ^super.new.init
+    *new { arg lib;
+        ^super.new.init(lib);
     }
-    init {
+    init { arg lib;
+        library = lib;
+        library.synthdefs.postln;
         nodes = Dictionary.new;
         connections = Array;
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
@@ -73,11 +75,11 @@ SndFloGraph : Object {
 SndFloNetwork : Object {
     var <graph;
 
-    *new {
-        ^super.new.init
+    *new { arg library;
+        ^super.new.init(library);
     }
-    init {
-        graph = SndFloGraph.new;
+    init { arg library;
+        graph = SndFloGraph.new(library);
     }
 
     start { arg run;

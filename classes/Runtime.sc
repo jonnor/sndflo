@@ -44,8 +44,8 @@ SndFloUiConnection : Object {
 
 SndFloRuntime : Object {
     var connection;
-    var library;
-    var <network;
+    var <library;
+    var <>network;
 
     *new { arg server, listenAddr;
         ^super.new.init(server,listenAddr)
@@ -111,8 +111,7 @@ SndFloRuntime : Object {
         }
         { (protocol == "graph" && cmd == "clear") }
         {
-            network = SndFloNetwork.new();
-            network.graph.library = library;
+            network = SndFloNetwork.new(library);
         }
         { (protocol == "graph" && cmd == "addnode") }
         {

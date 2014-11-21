@@ -5,7 +5,7 @@ b.index;
 
 g = "examples/first.json".parseYAMLFile();
 l = SndFloLibrary.new(s);
-n = SndFloNetwork.new;
+n = SndFloNetwork.new(l);
 n.loadGraph(g);
 n.start(true);
 
