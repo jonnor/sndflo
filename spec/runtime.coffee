@@ -1,6 +1,6 @@
-#     imgflo - Flowhub.io Image-processing runtime
-#     (c) 2014 The Grid
-#     imgflo may be freely distributed under the MIT license
+#     sndflo - Flowhub.io sound processing runtime based on SuperCollider
+#     (c) 2014 Jon Nordby
+#     sndflo may be freely distributed under the MIT license
 
 chai = require 'chai'
 scflo = require '../scflo.coffee'
