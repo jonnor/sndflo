@@ -8,8 +8,11 @@ var f = {
         // Load first arg as default graph
         r.network = SndFloNetwork.new(r.library);
         g = thisProcess.argv[0].parseYAMLFile;
-        r.network.loadGraph(g);
-        r.network.start(true);
+        Task.new({
+            s.sync; // make sure library is loaded
+            r.network.loadGraph(g);
+            r.network.start(true);
+        }).play;
     });
 };
 
