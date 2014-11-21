@@ -31,7 +31,7 @@ class WebSocketOscFbpAdapter extends EventEmitter
 
     start: (wsPort, oscPort, callback) ->
         @sendPort = oscPort
-        @receivePort = @sendPort+1
+        @receivePort = @sendPort+2
 
         @oscSockets.receive.bind @receivePort
         @httpServer.listen wsPort, callback

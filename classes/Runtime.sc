@@ -7,7 +7,7 @@ SndFloUiConnection : Object {
         ^super.new.init(listenAddr)
     }
     init { arg listenAddr;
-        uiAddr = NetAddr(listenAddr.ip, listenAddr.port+1);
+        uiAddr = NetAddr(listenAddr.ip, listenAddr.port+2);
         receiveOscFunc = OSCFunc.new({ |msg, time, addr, recvPort|
             "received: ".post; msg.postln;
             this.receiveOsc(msg,time,addr,recvPort);
