@@ -1,13 +1,13 @@
 {
   "processes": {
     "gen": {
-      "component": "SquareWave"
+      "component": "synth/SawWave"
     },
     "f": {
-      "component": "LowPassFilter"
+      "component": "synth/LowPassFilter"
     },
     "out": {
-      "component": "AudioOut"
+      "component": "synth/AudioOut"
     }
   },
   "connections": [
