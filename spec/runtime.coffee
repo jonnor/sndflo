@@ -207,6 +207,23 @@ describe 'FBP runtime API,', () ->
             ui.once 'runtime-info-changed', ->
                 done()
 
+    describe 'tearing down graph', ->
+        # TODO: find a way to verify results.
+        it 'should not crash', (done) ->
+
+            ui.send "graph", "removeinitial", {tgt: {node: 'in', port: 'freq'}}
+            ui.send "graph", "removeinitial", {tgt: {node: 'filter', port: 'freq'}}
+            ui.send "graph", "removeedge", {src: {node: 'in', port: 'out'}, tgt: {node: 'filter', port: 'in'}}
+            ui.send "graph", "removeedge", {src: {node: 'filter', port: 'out'}, tgt: {node: 'out', port: 'in'}}
+            ui.send "graph", "removenode", {id: 'in'}
+            ui.send "graph", "removenode", {id: 'filter'}
+            ui.send "graph", "removenode", {id: 'out'}
+
+            ui.send "runtime", "getruntime"
+            ui.once 'runtime-info-changed', ->
+                done()
+
+
     describe 'starting the network', ->
         it 'should respond with network started', (done) ->
             setTimeout ->
