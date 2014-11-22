@@ -5,6 +5,7 @@ before_install:
 - sudo apt-get update -qq
 - sudo apt-get install supercollider
 script:
-- export SCFLO_TESTS_VERBOSE=1
+- mkdir -p /home/travis/.local/share/SuperCollider/Extensions || true
 - ln -s `pwd`/sndflo ${HOME}/.local/share/SuperCollider/Extensions/sndflo
+- export SCFLO_TESTS_VERBOSE=1
 - npm test
