@@ -35,5 +35,6 @@ Running
 --------
 Only for the foolhardy so far :)
 
+* Use SuperCollider 3.5 or later
 * Symlink the git repo into your extensions directory
 * See the files sndflo-runtime.scd and scflo.js
