@@ -6,6 +6,8 @@ SndFloLibrary {
     // TODO: use a SynthDescLib?
     var <synthdefs;
     var server;
+    var componentDir;
+    var componentExtension;
 
     *new { arg server;
         ^super.new.init(server)
@@ -13,22 +15,43 @@ SndFloLibrary {
     init { arg server;
         server = server;
         synthdefs = Dictionary.new;
+        componentDir = "./components";
+        componentExtension = ".scd";
         this.registerDefaults();
     }
 
     *silentIn { ^12; }
     *silentOut { ^13; }
 
+    *componentDir {  }
+
     registerSynthDef { arg id, def;
         synthdefs["synth/"++id] = def;
         def.send(server);
     }
 
+    getSource { arg name;
+        var tokens = name.split;
+        var ret = nil;
+        (tokens.size == 2).if({
+            var lib = tokens[0];
+            var component = tokens[1];
+            // XXX: right now lib is ignored, we only support "synth"
+            var path = componentDir+/+component++componentExtension;
+            var file = File.open(path, "r");
+            file.isOpen.if({
+                ret = file.readAllString;
+                "GETSOURCE %\n".postf(path);
+            });
+        });
+        ^ret;
+    }
+
     registerDefaults {
-        var paths = PathName.new("./components").files;
+        var paths = PathName.new(componentDir).files;
         paths.do({ |pathobj|
             var path = pathobj.fullPath;
-            path.endsWith(".scd").if({
+            path.endsWith(componentExtension).if({
                 var file = File.open(path, "r");
                 file.isOpen.if({
                     var content = file.readAllString;

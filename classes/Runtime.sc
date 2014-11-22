@@ -100,7 +100,9 @@ SndFloRuntime : Object {
                 "capabilities" -> ["protocol:component",
                     "protocol:network",
                     "protocol:graph",
-                    "protocol:runtime"]
+                    "protocol:runtime",
+                    "component:getsource"
+                ]
             ];
             if(network.notNil, {
                 info["graph"] = "default/main"; // FIXME: unhardcode
@@ -143,6 +145,20 @@ SndFloRuntime : Object {
                 ];
 
                 connection.sendMessage("component", "component", info);
+            });
+        }
+        { (protocol == "component" && cmd == "getsource") }
+        {
+
+            var name = payload["name"];
+            var code = library.getSource(name);
+            code.notNil.if({
+                var response = Dictionary[
+                    "name" -> name,
+                    "language" -> "supercollider",
+                    "code" -> code,
+                ];
+                connection.sendMessage("component", "source", response);
             });
         }
         { (protocol == "graph" && cmd == "clear") }

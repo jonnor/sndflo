@@ -57,6 +57,8 @@ describe 'FBP runtime API,', () ->
             chai.expect(info.capabilities).to.include 'protocol:network'
         it 'capabilities should include "protocol:runtime"', ->
             chai.expect(info.capabilities).to.include 'protocol:runtime'
+        it 'capabilities should include "component:getsource"', ->
+            chai.expect(info.capabilities).to.include 'component:getsource'
 
     describe 'initial ports information', ->
         info = null
@@ -144,6 +146,14 @@ describe 'FBP runtime API,', () ->
             ui.once 'runtime-info-changed', ->
                 done()
 
+    describe 'component:getsource', ->
+        it 'should respond with compoent code', (done) ->
+            ui.send "component", "getsource", { name: "synth/AudioOut" }
+            ui.once 'component-source-changed', (info) ->
+                chai.expect(info.name).to.equal "synth/AudioOut"
+                chai.expect(info.language).to.equal 'supercollider'
+                chai.expect(info.code).to.contain 'SynthDef("AudioOut"'
+                done()
 
     describe 'starting the network', ->
         it 'should respond with network started', (done) ->
