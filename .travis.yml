@@ -6,4 +6,5 @@ before_install:
 - sudo apt-get install supercollider
 script:
 - export SCFLO_TESTS_VERBOSE=1
+- ln -s `pwd`/sndflo ${HOME}/.local/share/SuperCollider/Extensions/sndflo
 - npm test
