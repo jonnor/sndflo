@@ -1,69 +1,100 @@
 {
-  "properties": {
-      "name": "main",
-      "id": "snd/main",
-      "project": "snd",
-      "environment": {
-          "type": "sndflo"
-      }
-  },
-  "inports": {
-    "in": {
-      "process": "f",
-      "port": "in"
-    }
-  },
-  "outports": {
-    "out": {
-      "process": "f",
-      "port": "out"
-    }
-  },
-  "processes": {
-    "gen": {
-      "component": "synth/SawWave"
+    "properties": {
+        "name": "sawsynth",
+        "environment": {
+            "type": "sndflo"
+        }
     },
-    "f": {
-      "component": "synth/LowPassFilter"
+    "inports": {
+        "freq": {
+            "process": "f",
+            "port": "freq",
+            "metadata": {
+                "x": 0,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "freq1": {
+            "process": "gen",
+            "port": "freq",
+            "metadata": {
+                "x": -144,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        }
     },
-    "out": {
-      "component": "synth/AudioOut"
-    }
-  },
-  "connections": [
-    {
-      "src": {
-        "process": "gen",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "f",
-        "port": "in"
-      }
+    "outports": {},
+    "groups": [],
+    "processes": {
+        "gen": {
+            "component": "synth/SawWave",
+            "metadata": {
+                "x": -36,
+                "y": 36,
+                "width": 72,
+                "height": 72,
+                "label": "gen"
+            }
+        },
+        "f": {
+            "component": "synth/LowPassFilter",
+            "metadata": {
+                "x": 108,
+                "y": 36,
+                "width": 72,
+                "height": 72,
+                "label": "f"
+            }
+        },
+        "out": {
+            "component": "synth/AudioOut",
+            "metadata": {
+                "x": 252,
+                "y": 36,
+                "width": 72,
+                "height": 72,
+                "label": "out"
+            }
+        }
     },
-    {
-      "src": {
-        "process": "f",
-        "port": "out"
-      },
-      "tgt": {
-        "process": "out",
-        "port": "in"
-      }
-    },
-    {
-      "data": "440",
-      "tgt": {
-        "process": "gen",
-        "port": "freq"
-      }
-    },
-    {
-      "data": "2000",
-      "tgt": {
-        "process": "f",
-        "port": "freq"
-      }
-    }
-  ]
+    "connections": [
+        {
+            "src": {
+                "process": "gen",
+                "port": "out"
+            },
+            "tgt": {
+                "process": "f",
+                "port": "in"
+            }
+        },
+        {
+            "src": {
+                "process": "f",
+                "port": "out"
+            },
+            "tgt": {
+                "process": "out",
+                "port": "in"
+            }
+        },
+        {
+            "data": "440",
+            "tgt": {
+                "process": "gen",
+                "port": "freq"
+            }
+        },
+        {
+            "data": "2000",
+            "tgt": {
+                "process": "f",
+                "port": "freq"
+            }
+        }
+    ]
 }
