@@ -17,21 +17,27 @@ if process.env.SCFLO_TESTS_DEBUG?
 verbose = process.env.SCFLO_TESTS_VERBOSE?
 graph = 'graphs/sawsynth.json'
 
+rtoptions =
+    wsPort: wsPort
+    oscPort: oscPort
+    debug: debug
+    verbose: verbose
+    graph: graph
+
+console.log rtoptions
+
 describe 'FBP runtime API,', () ->
-    runtime = new scflo.SuperColliderProcess debug, verbose, graph
     ui = new utils.MockUi
-    adapter = new scflo.Adapter
+    runtime = new scflo.Runtime rtoptions
 
     before (done) ->
         @timeout 6000
-        adapter.start wsPort, oscPort, (err) ->
+        runtime.start (err) ->
             throw err if err
-            runtime.start oscPort, ->
-                ui.connect wsPort
-                ui.on 'connected', () ->
-                    done()
+            ui.connect wsPort
+            ui.on 'connected', () ->
+                done()
     after ->
-        adapter.stop()
         runtime.stop()
         ui.disconnect()
 

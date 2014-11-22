@@ -150,6 +150,34 @@ class SuperColliderProcess
         @errors = []
         return errors
 
+# Handles both the SuperCollider setup and the OSC<->WebSocket bridging
+class Runtime extends EventEmitter
+    constructor: (options) ->
+        defaults =
+            wsPort: 3569
+            oscPort: 57120
+            verbose: false
+            debug: false
+            graph: null
+        @options = {}
+        for k,v of defaults
+            @options[k] = v
+        for k,v of options
+            @options[k] = v
+        @adapter = new WebSocketOscFbpAdapter()
+        @supercollider = new SuperColliderProcess @options.debug, @options.verbose, @options.graph
+
+    start: (callback) ->
+        @supercollider.start @options.oscPort, (pid) =>
+            internal = @options.oscPort
+            @adapter.start @options.wsPort, internal, (err) =>
+                callback err, null if err
+                callback null, internal
+
+    stop: (callback) ->
+        @supercollider.stop()
+        @adapter.stop()
+
 main = () ->
 
     wsPort = 3569
@@ -167,4 +195,5 @@ module.exports =
     main: main
     Adapter: WebSocketOscFbpAdapter
     SuperColliderProcess: SuperColliderProcess
+    Runtime: Runtime
 
