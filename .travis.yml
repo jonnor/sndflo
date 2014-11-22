@@ -7,6 +7,7 @@ before_install:
 script:
 - sudo mkdir -p /usr/share/SuperCollider/Extensions || true
 - sudo ln -s `pwd` /usr/share/SuperCollider/Extensions/sndflo
-- jackd -d dummy
+- jackd -d dummy &
+- sleep 3
 - export SCFLO_TESTS_VERBOSE=1
 - npm test
