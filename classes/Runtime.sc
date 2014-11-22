@@ -58,6 +58,35 @@ SndFloRuntime : Object {
         library = SndFloLibrary.new(server);
     }
 
+    sendPorts {
+        var inports = [];
+        var outports = [];
+        var payload = Dictionary[
+            "graph" -> "default/main", // FIXME: unhardcode
+            "inPorts" -> inports,
+            "outPorts" -> outports,
+        ];
+        network.graph.inports.keysValuesDo({ |key,value|
+            inports.add(Dictionary[
+                "id" -> key,
+                "type" -> "all", // TODO: implement
+                "description" -> "", // TODO: implement
+                "addressable" -> false,
+                "required" -> false,
+            ]);
+        });
+        network.graph.outports.keysValuesDo({ |key,value|
+            outports.add(Dictionary[
+                "id" -> key,
+                "type" -> "all", // TODO: implement
+                "description" -> "", // TODO: implement
+                "addressable" -> false,
+                "required" -> false,
+            ]);
+        });
+        connection.sendMessage("runtime", "ports", payload);
+    }
+
     handleMessage { arg protocol, cmd, payload;
 
         case
@@ -68,9 +97,14 @@ SndFloRuntime : Object {
                 "version" -> "0.4", // protocol version
                 "capabilities" -> ["protocol:component",
                     "protocol:network",
-                    "protocol:graph"]
+                    "protocol:graph",
+                    "protocol:runtime"]
             ];
+            if(network.notNil, {
+                info["graph"] = "default/main"; // FIXME: unhardcode
+            });
             connection.sendMessage("runtime", "runtime", info);
+            this.sendPorts(nil);
         }
         { (protocol == "component" && cmd == "list") }
         {

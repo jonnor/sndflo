@@ -7,6 +7,8 @@ SndFloGraph : Object {
     var <connections;
     var <library;
     var nextBusNumber;
+    var <inports;
+    var <outports;
 
     *new { arg lib;
         ^super.new.init(lib);
@@ -17,10 +19,26 @@ SndFloGraph : Object {
         nodes = Dictionary.new;
         connections = Array;
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
+        inports = Dictionary.new;
+        outports = Dictionary.new;
+    }
+
+    addPort { arg direction, name, id, port;
+        var ports;
+        (direction == "in").if({ ports=inports }, { ports=outports });
+        ports[name] = Dictionary[ "port" -> port, "node" -> id];
+        "EXPORT %port: % => % %\n".postf(direction, name, port.toUpper, id);
+    }
+    removePort { arg direction, name;
+        var ports;
+        (direction == "in").if({ ports=inports }, { ports=outports });
+        ports[name] = nil;
+        "UNEXPORT %port: %\n".postf(direction, name);
     }
 
     addNode { arg id, component;
         var d = library.synthdefs[component];
+        component.postln;
         "%(%)\n".postf(id, d.name);
         nodes[id] = Synth.newPaused(d.name);
     }
@@ -103,6 +121,13 @@ SndFloNetwork : Object {
             }, {
                 graph.addIIP(tgtNode, tgtPort, conn["data"]);
             });
+        });
+        inputGraph["inports"].keysValuesDo({ |name, internal|
+            graph.addPort("in", name, internal["process"], internal["port"]);
+            1
+        });
+        inputGraph["outports"].keysValuesDo({ |name, internal|
+            graph.addPort("out", name, internal["process"], internal["port"]);
         });
     }
 

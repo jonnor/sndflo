@@ -1,4 +1,24 @@
 {
+  "properties": {
+      "name": "main",
+      "id": "snd/main",
+      "project": "snd",
+      "environment": {
+          "type": "sndflo"
+      }
+  },
+  "inports": {
+    "in": {
+      "process": "f",
+      "port": "in"
+    }
+  },
+  "outports": {
+    "out": {
+      "process": "f",
+      "port": "out"
+    }
+  },
   "processes": {
     "gen": {
       "component": "synth/SawWave"
