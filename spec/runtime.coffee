@@ -5,10 +5,23 @@
 chai = require 'chai'
 scflo = require '../scflo.coffee'
 utils = require './utils'
+fs = require 'fs'
 
 debug = false
 oscPort = 57230
 wsPort = 3888
+
+startupTimeout = 5*1000
+
+readSync = (filename) ->
+    ret = ""
+    if fs.existsSync(filename)
+        ret = fs.readFileSync(filename, {encoding: 'utf-8'})
+    return ret
+
+if readSync('/proc/cpuinfo').indexOf(': BCM2708') != -1
+    console.log 'is RPi'
+    startupTimeout = 50*1000
 
 if process.env.SCFLO_TESTS_DEBUG?
     debug = true
@@ -29,7 +42,7 @@ describe 'FBP runtime API,', () ->
     runtime = new scflo.Runtime rtoptions
 
     before (done) ->
-        @timeout 6000
+        @timeout startupTimeout
         runtime.start (err) ->
             throw err if err
             ui.connect wsPort
