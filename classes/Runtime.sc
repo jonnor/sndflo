@@ -56,6 +56,9 @@ SndFloRuntime : Object {
             this.handleMessage(pr,cmd,pay);
         };
         library = SndFloLibrary.new(server);
+        library.on_component_changed = { |name|
+            this.sendComponent(name);
+        };
     }
 
     sendPorts {
@@ -89,6 +92,42 @@ SndFloRuntime : Object {
         connection.sendMessage("runtime", "ports", payload);
     }
 
+    sendComponent { arg name;
+        var synthdef = library.synthdefs[name];
+        var inPorts = List.new;
+        var outPorts = List.new;
+        var info;
+        synthdef.allControlNames.do({ |control|
+            var type = "bus"; // TODO: separate out non-bus params
+            var p = Dictionary[
+                "id" -> control.name,
+                "type" -> type,
+                "description" -> "",
+                "addressable" -> false, // TODO: support multi-channel
+                "required" -> false // TODO: should be true for input busses
+            ];
+            // TODO: support multiple out-ports
+            // FIXME: use something better than heuristics to determine out ports
+            if (control.name.asString == "out", {
+                outPorts.add(p);
+            }, {
+                inPorts.add(p);
+            });
+
+        });
+
+        info = Dictionary[
+            "name" -> name,
+            "description" -> synthdef.metadata.description.asString,
+            "icon" -> "music",
+            "subgraph" -> false,
+            "inPorts" -> inPorts,
+            "outPorts" -> outPorts
+        ];
+
+        connection.sendMessage("component", "component", info);
+    }
+
     handleMessage { arg protocol, cmd, payload;
 
         case
@@ -101,7 +140,8 @@ SndFloRuntime : Object {
                     "protocol:network",
                     "protocol:graph",
                     "protocol:runtime",
-                    "component:getsource"
+                    "component:getsource",
+                    "component:setsource",
                 ]
             ];
             if(network.notNil, {
@@ -112,39 +152,8 @@ SndFloRuntime : Object {
         }
         { (protocol == "component" && cmd == "list") }
         {
-            library.synthdefs.keysValuesDo({ |key,synthdef|
-                var inPorts = List.new;
-                var outPorts = List.new;
-                var info;
-                synthdef.allControlNames.do({ |control|
-                    var type = "bus"; // TODO: separate out non-bus params
-                    var p = Dictionary[
-                        "id" -> control.name,
-                        "type" -> type,
-                        "description" -> "",
-                        "addressable" -> false, // TODO: support multi-channel
-                        "required" -> false // TODO: should be true for input busses
-                    ];
-                    // TODO: support multiple out-ports
-                    // FIXME: use something better than heuristics to determine out ports
-                    if (control.name.asString == "out", {
-                        outPorts.add(p);
-                    }, {
-                        inPorts.add(p);
-                    });
-
-                });
-
-                info = Dictionary[
-                    "name" -> key,
-                    "description" -> synthdef.metadata.description.asString,
-                    "icon" -> "music",
-                    "subgraph" -> false,
-                    "inPorts" -> inPorts,
-                    "outPorts" -> outPorts
-                ];
-
-                connection.sendMessage("component", "component", info);
+            library.synthdefs.keysValuesDo({ |name,synthdef|
+                this.sendComponent(name);
             });
         }
         { (protocol == "component" && cmd == "getsource") }
@@ -160,6 +169,11 @@ SndFloRuntime : Object {
                 ];
                 connection.sendMessage("component", "source", response);
             });
+        }
+        { (protocol == "component" && cmd == "source") }
+        {
+            var name = payload["name"];
+            library.setSource(name, payload["code"]);
         }
         { (protocol == "graph" && cmd == "clear") }
         {

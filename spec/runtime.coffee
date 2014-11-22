@@ -63,6 +63,8 @@ describe 'FBP runtime API,', () ->
             chai.expect(info.capabilities).to.include 'protocol:runtime'
         it 'capabilities should include "component:getsource"', ->
             chai.expect(info.capabilities).to.include 'component:getsource'
+        it 'capabilities should include "component:setsource"', ->
+            chai.expect(info.capabilities).to.include 'component:setsource'
 
     describe 'initial ports information', ->
         info = null
@@ -157,6 +159,27 @@ describe 'FBP runtime API,', () ->
                 chai.expect(info.name).to.equal "synth/AudioOut"
                 chai.expect(info.language).to.equal 'supercollider'
                 chai.expect(info.code).to.contain 'SynthDef("AudioOut"'
+                done()
+
+    describe 'component:source', ->
+        code = """
+        SynthDef("AudioOut2", {
+            arg in=SndFloLibrary.silentIn, out=0;
+            Out.ar(out, In.ar(in))
+        },
+            metadata: (
+                description: "Uploaded over FBP"
+            )
+        )
+        """
+        it 'should respond with component change', (done) ->
+            ui.send "component", "source", { name: "synth/AudioOut2", code }
+            ui.once 'component-added', (name, definition) ->
+                chai.expect(name).to.equal "synth/AudioOut2"
+                chai.expect(definition.description).to.equal 'Uploaded over FBP'
+                chai.expect(definition.icon).to.equal 'music'
+                chai.expect(definition.inPorts).to.have.length 1
+                chai.expect(definition.outPorts).to.have.length 1
                 done()
 
     describe 'starting the network', ->

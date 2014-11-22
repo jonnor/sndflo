@@ -8,6 +8,7 @@ SndFloLibrary {
     var server;
     var componentDir;
     var componentExtension;
+    var >on_component_changed;
 
     *new { arg server;
         ^super.new.init(server)
@@ -17,6 +18,8 @@ SndFloLibrary {
         synthdefs = Dictionary.new;
         componentDir = "./components";
         componentExtension = ".scd";
+        on_component_changed = { |name| }; // override
+
         this.registerDefaults();
     }
 
@@ -45,6 +48,15 @@ SndFloLibrary {
             });
         });
         ^ret;
+    }
+
+    setSource { arg name, code;
+        var def = code.interpret;
+        if(def.notNil && "synth/"++def.name == name, {
+            this.registerSynthDef(def.name, def);
+            "SETSOURCE %\n".postf(name);
+            on_component_changed.value(name);
+        });
     }
 
     registerDefaults {
