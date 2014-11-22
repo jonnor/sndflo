@@ -2,9 +2,9 @@ language: node_js
 node_js:
 - '0.10'
 before_install:
-- sudo add-apt-repository ppa:supercollider/ppa
+- sudo add-apt-repository -y ppa:supercollider/ppa
 - sudo apt-get update -qq
-- sudo apt-get install supercollider
+- sudo apt-get -y install supercollider
 script:
 - sudo mkdir -p /usr/share/SuperCollider/Extensions || true
 - sudo ln -s `pwd` /usr/share/SuperCollider/Extensions/sndflo
