@@ -70,10 +70,10 @@ describe 'FBP runtime API,', () ->
             chai.expect(info.graph).to.equal 'default/main'
         it 'should have inports', ->
             chai.expect(info.inPorts).to.be.an 'array'
-            chai.expect(info.inPorts).to.have.length 1
+            chai.expect(info.inPorts).to.have.length 2
         it 'should have outports', ->
             chai.expect(info.outPorts).to.be.an 'array'
-            chai.expect(info.outPorts).to.have.length 1
+            chai.expect(info.outPorts).to.have.length 0
 
     describe.skip 'sending packet in', ->
         graphName = 'default/main'

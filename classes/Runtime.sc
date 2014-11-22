@@ -59,21 +59,22 @@ SndFloRuntime : Object {
     }
 
     sendPorts {
-        var inports = [];
-        var outports = [];
+        var inports = List.new;
+        var outports = List.new;
         var payload = Dictionary[
             "graph" -> "default/main", // FIXME: unhardcode
             "inPorts" -> inports,
             "outPorts" -> outports,
         ];
         network.graph.inports.keysValuesDo({ |key,value|
-            inports.add(Dictionary[
+            var p = Dictionary[
                 "id" -> key,
                 "type" -> "all", // TODO: implement
                 "description" -> "", // TODO: implement
                 "addressable" -> false,
                 "required" -> false,
-            ]);
+            ];
+            inports.add(p);
         });
         network.graph.outports.keysValuesDo({ |key,value|
             outports.add(Dictionary[
@@ -84,6 +85,7 @@ SndFloRuntime : Object {
                 "required" -> false,
             ]);
         });
+
         connection.sendMessage("runtime", "ports", payload);
     }
 
