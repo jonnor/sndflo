@@ -25,7 +25,7 @@ SndFloUiConnection : Object {
             "command" -> command,
             "payload" -> payload
         ];
-        var str = JSON.stringify(msg);
+        var str = SndFloJSON.stringify(msg);
         "sending response: ".post; str.postln;
         uiAddr.sendMsg("/fbp/ui/message", str);
     }
