@@ -24,8 +24,6 @@ rtoptions =
     verbose: verbose
     graph: graph
 
-console.log rtoptions
-
 describe 'FBP runtime API,', () ->
     ui = new utils.MockUi
     runtime = new scflo.Runtime rtoptions

@@ -98,13 +98,13 @@ class SuperColliderProcess
         @verbose = verbose
         @graph = graph
 
-    start: (port, success) ->
+    start: (desiredPort, callback) ->
         if @debug
             console.log 'Debug mode: setup runtime yourself!'
             return success 0
 
         exec = 'sclang'
-        args = ['-u', port.toString(), 'sndflo-runtime.scd']
+        args = ['-u', desiredPort.toString(), 'sndflo-runtime.scd']
         args.push @graph if @graph
 
         console.log exec, args.join ' ' if @verbose
@@ -113,7 +113,7 @@ class SuperColliderProcess
             throw err
         @process.on 'exit', (code, signal) ->
             if code != 0
-                throw new Error 'Runtime exited with non-zero code: ' + code + ' :' +signal
+                callback new Error 'Runtime exited with non-zero code: ' + code + ' :' +signal
 
         stderr = ""
         @process.stderr.on 'data', (d) =>
@@ -129,16 +129,17 @@ class SuperColliderProcess
         @process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
             stdout += d.toString()
-            readyString = 'sndflo-runtime running on port'
             failString = 'ERROR: server failed to start'
-            if stdout.indexOf(readyString) != -1
+            readyExp = /sndflo-runtime running on port (\d+)/i
+            readyMatch = stdout.match readyExp
+            if readyMatch
                 if not @started
                     errors = @popErrors()
-
+                    port = readyMatch[1]
                     @started = true
-                    success process.pid
+                    callback null, port, process.pid
             if stdout.indexOf(failString) != -1 or stderr.indexOf(failString) != -1
-                throw new Error 'Failed to start up'
+                callback new Error 'Failed to start up', null, null
 
     stop: ->
         if @debug
@@ -168,11 +169,13 @@ class Runtime extends EventEmitter
         @supercollider = new SuperColliderProcess @options.debug, @options.verbose, @options.graph
 
     start: (callback) ->
-        @supercollider.start @options.oscPort, (pid) =>
-            internal = @options.oscPort
+        @supercollider.start @options.oscPort, (err, port, pid) =>
+            return callback err, null if err
+            internal = parseInt(port)
+            console.log 'internal port', internal if @options.verbose
             @adapter.start @options.wsPort, internal, (err) =>
-                callback err, null if err
-                callback null, internal
+                return callback err, null if err
+                return callback null, internal
 
     stop: (callback) ->
         @supercollider.stop()
