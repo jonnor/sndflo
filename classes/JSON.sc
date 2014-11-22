@@ -11,16 +11,16 @@ SndFloJSON {
 		var out;
 
 		if(obj.isString, {
-			^obj.asCompileString.replace("\n", JSON.nl).replace("\t", JSON.tab);
+			^obj.asCompileString.replace("\n", SndFloJSON.nl).replace("\t", SndFloJSON.tab);
  		});
 		if(obj.class === Symbol, {
-			^JSON.stringify(obj.asString)
+			^SndFloJSON.stringify(obj.asString)
 		});
 
 		if(obj.isKindOf(Dictionary), {
 			out = List.new;
 			obj.keysValuesDo({ arg key, value;
-				out.add( key.asString.asCompileString ++ ":" + JSON.stringify(value) );
+				out.add( key.asString.asCompileString ++ ":" + SndFloJSON.stringify(value) );
 			});
 			^("{" ++ (out.join(",")) ++ "}");
 		});
@@ -48,7 +48,7 @@ SndFloJSON {
 		});
 		if(obj.isKindOf(SequenceableCollection), {
 			^"[" ++ obj.collect({ arg sub;
-						JSON.stringify(sub)
+						SndFloJSON.stringify(sub)
 					}).join(",")
 				++ "]";
 		});
@@ -60,7 +60,7 @@ SndFloJSON {
 		// http://en.wikipedia.org/wiki/ISO_8601
 
 		("No JSON conversion for object" + obj).warn;
-		^JSON.stringify(obj.asCompileString)
+		^SndFloJSON.stringify(obj.asCompileString)
 	}
 
 }
