@@ -18,7 +18,7 @@ verbose = process.env.SCFLO_TESTS_VERBOSE?
 graph = 'graphs/sawsynth.json'
 
 describe 'FBP runtime API,', () ->
-    runtime = new utils.SuperColliderProcess debug, verbose, graph
+    runtime = new scflo.SuperColliderProcess debug, verbose, graph
     ui = new utils.MockUi
     adapter = new scflo.Adapter
 

@@ -2,8 +2,6 @@
 #     (c) 2014 Jon Nordby
 #     sndflo may be freely distributed under the MIT license
 
-fs = require 'fs'
-child_process = require 'child_process'
 EventEmitter = (require 'events').EventEmitter
 websocket = require 'websocket'
 
@@ -70,68 +68,4 @@ class MockUi extends EventEmitter
     sendMsg: (msg) ->
         @connection.sendUTF JSON.stringify msg
 
-
-class SuperColliderProcess
-    constructor: (debug, verbose, graph) ->
-        @process = null
-        @started = false
-        @debug = debug
-        @errors = []
-        @verbose = verbose
-        @graph = graph
-
-    start: (port, success) ->
-        if @debug
-            console.log 'Debug mode: setup runtime yourself!'
-            return success 0
-
-        exec = 'sclang'
-        args = ['-u', port.toString(), 'sndflo-runtime.scd']
-        args.push @graph if @graph
-
-        console.log exec, args.join ' ' if @verbose
-        @process = child_process.spawn exec, args
-        @process.on 'error', (err) ->
-            throw err
-        @process.on 'exit', (code, signal) ->
-            if code != 0
-                throw new Error 'Runtime exited with non-zero code: ' + code + ' :' +signal
-
-        stderr = ""
-        @process.stderr.on 'data', (d) =>
-            console.log d.toString() if @verbose
-            output = d.toString()
-            stderr += output
-            lines = output.split '\n'
-            for line in lines
-                err = line.trim()
-                @errors.push err if err
-
-        stdout = ""
-        @process.stdout.on 'data', (d) =>
-            console.log d.toString() if @verbose
-            stdout += d.toString()
-            readyString = 'sndflo-runtime running on port'
-            failString = 'ERROR: server failed to start'
-            if stdout.indexOf(readyString) != -1
-                if not @started
-                    errors = @popErrors()
-
-                    @started = true
-                    success process.pid
-            if stdout.indexOf(failString) != -1 or stderr.indexOf(failString) != -1
-                throw new Error 'Failed to start up'
-
-    stop: ->
-        if @debug
-            return
-        @process.kill()
-
-    popErrors: ->
-        errors = @errors
-        @errors = []
-        return errors
-
-
 exports.MockUi = MockUi
-exports.SuperColliderProcess = SuperColliderProcess
