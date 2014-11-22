@@ -18,7 +18,8 @@
   "bugs": "http://github.com/jonnor/scflo/issues",
   "license": "MIT",
   "scripts": {
-    "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee"
+    "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee",
+    "start": "node scflo.js"
   },
   "dependencies": {
     "noflo": "~0.4.0",

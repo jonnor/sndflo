@@ -39,9 +39,10 @@ class WebSocketOscFbpAdapter extends EventEmitter
     start: (wsPort, oscPort, callback) ->
         @sendPort = oscPort
         @receivePort = @sendPort+2
+        @wsPort = wsPort
 
         @oscSockets.receive.bind @receivePort
-        @httpServer.listen wsPort, callback
+        @httpServer.listen @wsPort, callback
 
     stop: () ->
         # FIXME: reverse effects of start()
@@ -182,17 +183,15 @@ class Runtime extends EventEmitter
         @adapter.stop()
 
 main = () ->
+    options =
+        wsPort: 3569
 
-    wsPort = 3569
-    oscPort = 57120
-
-    server = new WebSocketOscFbpAdapter()
-    server.start wsPort, oscPort, (err) ->
+    runtime = new Runtime options
+    runtime.start (err) ->
         if (err)
             throw err
-        console.log "Listening at WebSocket port", wsPort,
-                    "\nOSC server port", server.receivePort,
-                    "\nConnecting to SuperCollider at", server.sendPort
+        console.log "Listening at WebSocket port", runtime.adapter.wsPort,
+                    "\nOSC send/receive ports: ", runtime.adapter.sendPort, runtime.adapter.receivePort
 
 module.exports =
     main: main
