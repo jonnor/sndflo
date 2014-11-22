@@ -1,5 +1,5 @@
 var f = {
-    "sndflo-runtime STAAAAAAAAARTING".postln;
+    "sndflo-runtime starting".postln;
     r = SndFloRuntime.new(s, NetAddr.localAddr);
 
     Task.new({
@@ -11,7 +11,7 @@ var f = {
             r.network.loadGraph(g);
             r.network.start(true);
         });
-        "sndflo-runtime running on port %".postf(NetAddr.localAddr.port);
+        "sndflo-runtime running on port %\n".postf(NetAddr.localAddr.port);
     }).play;
 };
 

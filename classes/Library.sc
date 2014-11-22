@@ -25,42 +25,18 @@ SndFloLibrary {
     }
 
     registerDefaults {
-        var defs = [
-            SynthDef("SawWave", {
-                arg out=SndFloLibrary.silentOut, freq=440;
-                Out.ar(out, Saw.ar(freq))
-            },
-                metadata: (
-                    description: "",
-                    specs: (
-                        freq: ControlSpec(20, 20000, \exp, 0.1, 220, "Hz")
-                    )
-                )
-            )
-            ,
-            SynthDef("LowPassFilter", {
-                arg in=SndFloLibrary.silentIn, out=SndFloLibrary.silentOut, freq=4400;
-                Out.ar(out, BLowPass.ar(In.ar(in), freq))
-            },
-                metadata: (
-                    description: "",
-                    specs: (
-                        freq: ControlSpec(20, 20000, \exp, 0.1, 2200, "Hz")
-                    )
-                )
-            )
-            ,
-            SynthDef("AudioOut", {
-                arg in=SndFloLibrary.silentIn, out=0;
-                Out.ar(out, In.ar(in))
-            },
-                metadata: (
-                    description: "Play out on soundcard"
-                )
-            )
-        ];
-        defs.do({ |def|
-            this.registerSynthDef(def.name, def);
+        var paths = PathName.new("./components").files;
+        paths.do({ |pathobj|
+            var path = pathobj.fullPath;
+            path.endsWith(".scd").if({
+                var file = File.open(path, "r");
+                file.isOpen.if({
+                    var content = file.readAllString;
+                    var def = content.interpret;
+                    this.registerSynthDef(def.name, def);
+                    file.close;
+                });
+            });
         });
     }
 }
