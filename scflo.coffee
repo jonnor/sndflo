@@ -168,17 +168,20 @@ class Runtime extends EventEmitter
             @options[k] = v
         for k,v of options
             @options[k] = v
+
         @adapter = new WebSocketOscFbpAdapter()
         @supercollider = new SuperColliderProcess @options.debug, @options.verbose, @options.graph
 
-        @rt = new flowhub.Runtime
-            label: @options.label
-            id: @options.id
-            user: @options.user
-            secret: @options.secret
-            protocol: 'websocket'
-            type: 'sndflo'
-            address: 'ws://' + @options.host + ':' + @options.port
+        @rt = null
+        if @options.user
+            @rt = new flowhub.Runtime
+                label: @options.label
+                id: @options.id
+                user: @options.user
+                secret: @options.secret
+                protocol: 'websocket'
+                type: 'sndflo'
+                address: 'ws://' + @options.host + ':' + @options.port
         @registryPinger = null
 
     register: (callback) ->
@@ -197,7 +200,7 @@ class Runtime extends EventEmitter
             console.log 'internal port', internal if @options.verbose
             @adapter.start @options.port, internal, (err) =>
                 return callback err, null if err
-                if @options.user
+                if @rt
                     @register (err) ->
                         return console.log 'Failed to register Flowhub runtime: ' + err if err
                         console.log 'Registered with Flowhub, should be accessible in UI'
@@ -211,11 +214,16 @@ class Runtime extends EventEmitter
         @adapter.stop()
 
 main = () ->
-    options =
-        port: 3569
-        verbose: true
+    program = require 'commander'
+    program
+        .option '-p, --port <PORT>', 'WebSocket port'
+        .option '-i, --host <HOSTNAME>', 'WebSocket hostname'
+        .option '-u, --user <UUID>', 'Flowhub user id to register for'
+        .option '-r, --id <UUID>', 'Flowhub runtime id to use'
+        .option '-v, --verbose', 'Verbose logging'
+        .parse(process.argv)
 
-    runtime = new Runtime options
+    runtime = new Runtime program
     runtime.start (err) ->
         if (err)
             throw err
