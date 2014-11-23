@@ -22,13 +22,14 @@
     "start": "node scflo.js"
   },
   "dependencies": {
-    "noflo": "~0.4.0",
-    "fbp": "~1.0.2",
-    "websocket": "^1.0.8",
+    "coffee-script": "^1.7.1",
     "commander": "~2.1.0",
-    "pkginfo": "~0.3.0",
+    "fbp": "~1.0.2",
+    "flowhub-registry": "0.0.2",
+    "noflo": "~0.4.0",
     "osc-min": "~0.0.12",
-    "coffee-script": "^1.7.1"
+    "pkginfo": "~0.3.0",
+    "websocket": "^1.0.8"
   },
   "devDependencies": {
     "mocha": "~1.13.0",

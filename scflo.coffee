@@ -5,11 +5,6 @@
 # Adapter code between NoFlo WS/.JSON/.FBP protocol,
 # and the OSC protocol spoken by the SuperCollider runtime
 
-# FIXME: Consider using http://automata.cc/osc-web ?
-# TODO: create an abstraction around node.js dependencies, so that this code can also run Chrome app
-# TODO: Create end-to-end tests using mocha
-# TODO: figure out how we can stream audio to webapp from SuperCollider. WebRTC? RTP? WS+WebAudio
-
 osc = require 'osc-min'
 udp = require 'dgram'
 http = require 'http'
@@ -17,6 +12,7 @@ websocket = require 'websocket'
 EventEmitter = (require 'events').EventEmitter
 fs = require 'fs'
 child_process = require 'child_process'
+flowhub = require 'flowhub-registry'
 
 class WebSocketOscFbpAdapter extends EventEmitter
 
@@ -156,11 +152,17 @@ class SuperColliderProcess
 class Runtime extends EventEmitter
     constructor: (options) ->
         defaults =
-            wsPort: 3569
+            port: 3569
             oscPort: 57120
             verbose: false
             debug: false
             graph: null
+            label: "unlabeled sndflo runtime"
+            user: null
+            id: null
+            host: 'localhost'
+            ping: 5*60 # seconds
+            secret: 'not-secret' # FIXME: random
         @options = {}
         for k,v of defaults
             @options[k] = v
@@ -169,22 +171,49 @@ class Runtime extends EventEmitter
         @adapter = new WebSocketOscFbpAdapter()
         @supercollider = new SuperColliderProcess @options.debug, @options.verbose, @options.graph
 
+        @rt = new flowhub.Runtime
+            label: @options.label
+            id: @options.id
+            user: @options.user
+            secret: @options.secret
+            protocol: 'websocket'
+            type: 'sndflo'
+            address: 'ws://' + @options.host + ':' + @options.port
+        @registryPinger = null
+
+    register: (callback) ->
+        @rt.register (err, ok) =>
+            return callback err if err
+            if @options.ping > 0
+                @registryPinger = setInterval () =>
+                    @rt.ping()
+                , @options.ping
+            return callback null
+
     start: (callback) ->
         @supercollider.start @options.oscPort, (err, port, pid) =>
             return callback err, null if err
             internal = parseInt(port)
             console.log 'internal port', internal if @options.verbose
-            @adapter.start @options.wsPort, internal, (err) =>
+            @adapter.start @options.port, internal, (err) =>
                 return callback err, null if err
+                if @options.user
+                    @register (err) ->
+                        return console.log 'Failed to register Flowhub runtime: ' + err if err
+                        console.log 'Registered with Flowhub, should be accessible in UI'
                 return callback null, internal
 
     stop: (callback) ->
+        if @registryPinger
+            clearInterval @registryPinger
+            @registryPinger = null
         @supercollider.stop()
         @adapter.stop()
 
 main = () ->
     options =
-        wsPort: 3569
+        port: 3569
+        verbose: true
 
     runtime = new Runtime options
     runtime.start (err) ->

@@ -31,7 +31,7 @@ verbose = process.env.SCFLO_TESTS_VERBOSE?
 graph = 'graphs/sawsynth.json'
 
 rtoptions =
-    wsPort: wsPort
+    port: wsPort
     oscPort: oscPort
     debug: debug
     verbose: verbose
@@ -45,7 +45,7 @@ describe 'FBP runtime API,', () ->
         @timeout startupTimeout
         runtime.start (err) ->
             throw err if err
-            ui.connect wsPort
+            ui.connect rtoptions.port
             ui.on 'connected', () ->
                 done()
     after ->
