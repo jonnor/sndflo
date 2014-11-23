@@ -1,15 +1,47 @@
 Data-flow programming for SuperCollider?
 ========================================
-This is an experimental project, exploring how one
-can program [SuperCollider](http://supercollider.sourceforge.net) using
-[Flowhub](http://flowhub.io). This will hopefully allow to do
-audio synthesis, sound processing and algorithmic using a visual data-flow
-programming model.
+sndflo allows to program [SuperCollider](http://supercollider.sourceforge.net) using
+the [Flowhub](http://flowhub.io) visual data-flow IDE.
 
 Status
 ------
 Proof-of-concept working for wiring up Synth's.
 
+
+Install
+--------
+**Note: Only tested on GNU/Linux.**
+Should work fine on other platforms with minor adjustments in install.
+
+Prerequities
+
+* [SuperCollider](http://supercollider.sourceforge.net/downloads/) (version 3.5 or later)
+* [node.js](http://nodejs.org/download/)
+
+Install
+
+    git clone https://github.com/jonnor/sndflo.git
+    cd sndflo
+
+    # Install as SuperCollider extension
+    mkdir -p ~/.local/share/SuperCollider/Extensions || true
+    ln -s `pwd` ~/.local/share/SuperCollider/Extensions/sndflo
+
+Running
+---------
+
+    node scflo.js --verbose --user MY_FLOWHUB_UUID --id 125245
+
+Will start up SuperCollider, loading the sndflo runtime and FBP protocol bridge.
+On success should output something like 
+
+    Listening at WebSocket port 3569 
+    OSC send/receive ports:  57120 57122
+    Registered with Flowhub, should be accessible in UI
+
+
+Go to [http://app.flowhub.io](http://app.flowhub.io), refresh the runtime list.
+You should see our sndflo runtime listed, be able to create projects for 'sndflo' and connect.
 
 Vision
 ---------
@@ -31,10 +63,4 @@ Usecases
 * Audio effect pipelines, processing sound inputs
 * Audio and music analysis, feature extraction
 
-Running
---------
-Only for the foolhardy so far :)
 
-* Use SuperCollider 3.5 or later
-* Symlink the git repo into your extensions directory
-* See the files sndflo-runtime.scd and scflo.js
