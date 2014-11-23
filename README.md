@@ -39,9 +39,11 @@ On success should output something like
     OSC send/receive ports:  57120 57122
     Registered with Flowhub, should be accessible in UI
 
-
 Go to [http://app.flowhub.io](http://app.flowhub.io), refresh the runtime list.
 You should see our sndflo runtime listed, be able to create projects for 'sndflo' and connect.
+
+Note: on GNU/Linux sclang might fail with a segfault if X11 is not available.
+You can use `xvfb-run` to work around this.
 
 Vision
 ---------
