@@ -187,10 +187,11 @@ class Runtime extends EventEmitter
     register: (callback) ->
         @rt.register (err, ok) =>
             return callback err if err
+            @rt.ping()
             if @options.ping > 0
                 @registryPinger = setInterval () =>
                     @rt.ping()
-                , @options.ping
+                , @options.ping*1000
             return callback null
 
     start: (callback) ->
