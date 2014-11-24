@@ -23,11 +23,11 @@ if readSync('/proc/cpuinfo').indexOf(': BCM2708') != -1
     console.log 'is RPi'
     startupTimeout = 50*1000
 
-if process.env.SCFLO_TESTS_DEBUG?
+if process.env.SNDFLO_TESTS_DEBUG?
     debug = true
     oscPort = 57120
 
-verbose = process.env.SCFLO_TESTS_VERBOSE?
+verbose = process.env.SNDFLO_TESTS_VERBOSE?
 graph = 'graphs/sawsynth.json'
 
 rtoptions =
