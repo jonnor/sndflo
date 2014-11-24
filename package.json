@@ -26,6 +26,7 @@
     "commander": "^2.1.0",
     "fbp": "~1.0.2",
     "flowhub-registry": "0.0.2",
+    "node-uuid": "^1.4.1",
     "noflo": "~0.4.0",
     "osc-min": "~0.0.12",
     "pkginfo": "~0.3.0",

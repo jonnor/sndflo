@@ -13,6 +13,7 @@ EventEmitter = (require 'events').EventEmitter
 fs = require 'fs'
 child_process = require 'child_process'
 flowhub = require 'flowhub-registry'
+uuid = require 'node-uuid'
 
 class WebSocketOscFbpAdapter extends EventEmitter
 
@@ -221,8 +222,14 @@ main = () ->
         .option '-i, --host <HOSTNAME>', 'WebSocket hostname'
         .option '-u, --user <UUID>', 'Flowhub user id to register for'
         .option '-r, --id <UUID>', 'Flowhub runtime id to use'
+        .option '-l, --label <LABEL>', 'Label for Flowhub runtime'
+        .option '-g, --graph <FILE>', 'Initial graph to load'
         .option '-v, --verbose', 'Verbose logging'
         .parse(process.argv)
+
+    if program.user and not program.id
+        program.id = uuid.v4()
+        console.log 'Using new Flowhub runtime id', program.id
 
     runtime = new Runtime program
     runtime.start (err) ->
