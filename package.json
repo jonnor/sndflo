@@ -1,5 +1,5 @@
 {
-  "name": "scflo",
+  "name": "sndflo",
   "version": "0.0.1",
   "description": "Flow-based programming runtime for SuperCollider",
   "keywords": [
@@ -13,13 +13,13 @@
   "author": "Jon Nordby <jononor@gmail.com> (http://www.jonnor.com)",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jonnor/scflo.git"
+    "url": "http://github.com/jonnor/sndflo.git"
   },
-  "bugs": "http://github.com/jonnor/scflo/issues",
+  "bugs": "http://github.com/jonnor/sndflo/issues",
   "license": "MIT",
   "scripts": {
     "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee",
-    "start": "node scflo.js"
+    "start": "node sndflo.js"
   },
   "dependencies": {
     "coffee-script": "^1.7.1",

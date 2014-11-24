@@ -3,7 +3,7 @@
 #     sndflo may be freely distributed under the MIT license
 
 chai = require 'chai'
-scflo = require '../scflo.coffee'
+sndflo = require '../sndflo.coffee'
 utils = require './utils'
 fs = require 'fs'
 
@@ -39,7 +39,7 @@ rtoptions =
 
 describe 'FBP runtime API,', () ->
     ui = new utils.MockUi
-    runtime = new scflo.Runtime rtoptions
+    runtime = new sndflo.Runtime rtoptions
 
     before (done) ->
         @timeout startupTimeout
