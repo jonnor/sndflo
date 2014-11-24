@@ -14,6 +14,7 @@ fs = require 'fs'
 child_process = require 'child_process'
 flowhub = require 'flowhub-registry'
 uuid = require 'node-uuid'
+querystring = require 'querystring'
 
 class WebSocketOscFbpAdapter extends EventEmitter
 
@@ -215,6 +216,12 @@ class Runtime extends EventEmitter
         @supercollider.stop()
         @adapter.stop()
 
+liveModeUrl = (options) ->
+    ide = options.ide or "http://app.flowhub.io"
+    address = "ws://#{options.host}:#{options.port}"
+    params = querystring.escape "protocol=websocket&address="+address
+    return ide+'#runtime/endpoint?'+params
+
 main = () ->
     program = require 'commander'
     program
@@ -236,7 +243,8 @@ main = () ->
         if (err)
             throw err
         console.log "Listening at WebSocket port", runtime.adapter.wsPort,
-                    "\nOSC send/receive ports: ", runtime.adapter.sendPort, runtime.adapter.receivePort
+                    "\nOSC send/receive ports: ", runtime.adapter.sendPort, runtime.adapter.receivePort,
+                    "Open in Flowhub: ", liveModeUrl options
 
 module.exports =
     main: main

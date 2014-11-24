@@ -131,4 +131,53 @@ SndFloNetwork : Object {
         });
     }
 
+    saveGraph {
+        var root = Dictionary.new();
+
+        root["processes"] = Dictionary.new();
+
+        this.graph.nodes.keysValuesDo({ |name,synth|
+            var proc = Dictionary[
+                "component" -> ("synth/"++synth.defName);
+            ];
+            root["processes"][name] = proc;
+        });
+
+        root["connections"] = List.new();
+
+        /*
+        do({ |conn,idx|
+            var src = conn["src"];
+            var tgtPort = conn["tgt"]["port"];
+            var tgtNode = conn["tgt"]["process"];
+            if (src.notNil, {
+                graph.addEdge(conn["src"]["process"], conn["src"]["port"], tgtNode, tgtPort);
+            }, {
+                graph.addIIP(tgtNode, tgtPort, conn["data"]);
+            });
+        });
+
+        root["inports"] = Dictionary.new();
+        this.graph.inports.keysValuesDo({ |name, internal|
+            root["inports"][name] = Dictionary[
+                "process" -> internal["node"],
+                "port" -> internal["port"],
+            ];
+        });
+
+        root["outports"] = Dictionary.new();
+        this.graph.outports.keysValuesDo({ |name, internal|
+            root["outports"][name] = Dictionary[
+                "process" -> internal["node"],
+                "port" -> internal["port"],
+            ];
+        });
+
+        ^root;
+    }
+
+    toJSON {
+        ^SndFloJSON.stringify(this.saveGraph());
+    }
+
 }

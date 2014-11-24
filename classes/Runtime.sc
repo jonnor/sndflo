@@ -158,17 +158,27 @@ SndFloRuntime : Object {
         }
         { (protocol == "component" && cmd == "getsource") }
         {
-
             var name = payload["name"];
-            var code = library.getSource(name);
-            code.notNil.if({
+            var code = nil;
+            (name == "default/main").if({
                 var response = Dictionary[
                     "name" -> name,
-                    "language" -> "supercollider",
-                    "code" -> code,
+                    "language" -> "json",
+                    "code" -> this.network.toJSON(),
                 ];
                 connection.sendMessage("component", "source", response);
+            }, {
+                var code = library.getSource(name);
+                code.notNil.if({
+                    var response = Dictionary[
+                        "name" -> name,
+                        "language" -> "supercollider",
+                        "code" -> code,
+                    ];
+                    connection.sendMessage("component", "source", response);
+                });
             });
+
         }
         { (protocol == "component" && cmd == "source") }
         {

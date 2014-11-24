@@ -96,6 +96,18 @@ describe 'FBP runtime API,', () ->
             chai.expect(info.outPorts).to.be.an 'array'
             chai.expect(info.outPorts).to.have.length 0
 
+    # TODO: get rid of once https://github.com/noflo/noflo-ui/issues/390 is fixed
+    describe 'component:getsource for default graph', ->
+        info = null
+        it 'should be return json in component:source', (done) ->
+            ui.once 'component-source-changed', (source) ->
+                chai.expect(source.name).to.equal 'default/main'
+                chai.expect(source.language).to.equal 'json'
+                chai.expect(JSON.parse(source.code)).to.contain.keys ['processes', 'connections']
+                done()
+            ui.send "component", "getsource", { name: 'default/main' }
+
+
     describe.skip 'sending packet in', ->
         graphName = 'default/main'
         it 'gives packet out', (done) ->
@@ -115,10 +127,13 @@ describe 'FBP runtime API,', () ->
     describe 'sending component list', ->
         it 'should return at least 3 components', (done) ->
             ui.send "component", "list"
-            ui.on 'component-added', (name, definition) ->
+            checkAdded = (name, definition) ->
                 numberOfComponents = Object.keys(ui.components).length
                 if numberOfComponents == 3
+                    ui.removeListener 'component-added', checkAdded
                     done()
+            ui.on 'component-added', checkAdded
+
         it 'should contain AudioOut', ->
             chai.expect(ui.components['synth/AudioOut']).to.be.an 'object'
 
