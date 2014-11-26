@@ -160,6 +160,12 @@ SndFloRuntime : Object {
             connection.sendMessage("runtime", "runtime", info);
             this.sendPorts(nil);
         }
+        { (protocol == "runtime" && cmd == "packet") }
+        {
+            if(payload["event"] == "data", {
+                network.sendPacket(payload["port"], payload["data"]);
+            });
+        }
         { (protocol == "component" && cmd == "list") }
         {
             library.synthdefs.keysValuesDo({ |name,synthdef|

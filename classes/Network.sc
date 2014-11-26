@@ -130,6 +130,13 @@ SndFloNetwork : Object {
         });
     }
 
+    sendPacket { arg public, value;
+        var internal = graph.inports[public];
+        var synth = graph.nodes[internal["node"]];
+        synth.set(internal["port"].asSymbol, value);
+        "PACKET % %\n".postf(public, value);
+    }
+
     loadGraph { arg inputGraph;
 
         inputGraph["processes"].keysValuesDo({ |key,value|
