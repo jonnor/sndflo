@@ -133,7 +133,7 @@ SndFloNetwork : Object {
     sendPacket { arg public, value;
         var internal = graph.inports[public];
         var synth = graph.nodes[internal["node"]];
-        synth.set(internal["port"].asSymbol, value);
+        synth.set(internal["port"].asSymbol, value.asFloat);
         "PACKET % %\n".postf(public, value);
     }
 

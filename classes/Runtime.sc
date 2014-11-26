@@ -163,7 +163,7 @@ SndFloRuntime : Object {
         { (protocol == "runtime" && cmd == "packet") }
         {
             if(payload["event"] == "data", {
-                network.sendPacket(payload["port"], payload["data"]);
+                network.sendPacket(payload["port"], payload["payload"]);
             });
         }
         { (protocol == "component" && cmd == "list") }
