@@ -220,7 +220,7 @@ liveModeUrl = (options) ->
     ide = options.ide or "http://app.flowhub.io"
     address = "ws://#{options.host}:#{options.port}"
     params = querystring.escape "protocol=websocket&address="+address
-    return ide+'#runtime/endpoint?'+params
+    return ide+'/#runtime/endpoint?'+params
 
 main = () ->
     program = require 'commander'
@@ -244,7 +244,7 @@ main = () ->
             throw err
         console.log "Listening at WebSocket port", runtime.adapter.wsPort,
                     "\nOSC send/receive ports: ", runtime.adapter.sendPort, runtime.adapter.receivePort,
-                    "Open in Flowhub: ", liveModeUrl options
+                    "Open in Flowhub: ", liveModeUrl runtime.options
 
 module.exports =
     main: main

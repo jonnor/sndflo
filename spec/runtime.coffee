@@ -101,7 +101,8 @@ describe 'FBP runtime API,', () ->
         info = null
         it 'should be return json in component:source', (done) ->
             ui.once 'component-source-changed', (source) ->
-                chai.expect(source.name).to.equal 'default/main'
+                chai.expect(source.library).to.equal 'default'
+                chai.expect(source.name).to.equal 'main'
                 chai.expect(source.language).to.equal 'json'
                 chai.expect(JSON.parse(source.code)).to.contain.keys ['processes', 'connections']
                 done()

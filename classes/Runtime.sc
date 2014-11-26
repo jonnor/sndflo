@@ -162,7 +162,8 @@ SndFloRuntime : Object {
             var code = nil;
             (name == "default/main").if({
                 var response = Dictionary[
-                    "name" -> name,
+                    "library" -> "default", // https://github.com/noflo/noflo-ui/issues/411
+                    "name" -> "main",
                     "language" -> "json",
                     "code" -> this.network.toJSON(),
                 ];
