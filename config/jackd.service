@@ -1,0 +1,13 @@
+[Unit]
+Description=jackd
+Wants=network.target
+Before=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jon/sndflo
+User=jon
+ExecStart=/usr/bin/xvfb-run -a jackd -d alsa -d hw:1
+
+[Install]
+WantedBy=multi-user.target
