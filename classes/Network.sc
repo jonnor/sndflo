@@ -5,10 +5,12 @@
 SndFloGraph : Object {
     var <nodes;
     var <connections;
-    var <library;
-    var nextBusNumber;
+    var <iips;
     var <inports;
     var <outports;
+
+    var <library;
+    var nextBusNumber;
 
     *new { arg lib;
         ^super.new.init(lib);
@@ -18,6 +20,7 @@ SndFloGraph : Object {
         library.synthdefs.postln;
         nodes = Dictionary.new;
         connections = Dictionary.new; // busNumber -> Dictionary[ src -> .., tgt -> .. ]
+        iips = Dictionary.new; // "port src" -> Object
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
         inports = Dictionary.new;
         outports = Dictionary.new;
@@ -67,8 +70,8 @@ SndFloGraph : Object {
         ]
     }
     removeEdge { arg srcId, srcPort, tgtId, tgtPort;
-        "DEL % % -> % %\n".postf(srcId, srcPort.toUpper, tgtPort.toUpper, tgtId);
         var busForEdge = nil;
+        "DEL % % -> % %\n".postf(srcId, srcPort.toUpper, tgtPort.toUpper, tgtId);
         connections.keysValuesDo({ |k, v|
             var found = v["src"]["process"] == srcId &&
                 v["src"]["port"] == srcPort &&
@@ -87,6 +90,7 @@ SndFloGraph : Object {
         "IIP: '%' -> % %\n".postf(data, tgtPort.toUpper, tgtId);
         // TODO: support other data than floats
         nodes[tgtId].set(tgtPort.asSymbol, data.asFloat);
+        iips[tgtPort+tgtId] = data.asFloat;
     }
     removeIIP { arg tgtId, tgtPort;
         // sets back default value
@@ -98,6 +102,7 @@ SndFloGraph : Object {
             specs = definition.metadata.specs;
             defaultValue = specs[tgtPort.asSymbol].default;
             tgtNode.set(tgtPort.asSymbol, defaultValue);
+            iips[tgtPort+tgtId] = nil;
 
             "DEL IIP -> % %\n".postf(tgtPort.toUpper, tgtId);
         });
@@ -159,8 +164,16 @@ SndFloNetwork : Object {
         });
 
         root["connections"] = List.new();
-        this.connections.nodes.keysValuesDo({ |bus,conn|
+        this.graph.connections.keysValuesDo({ |bus,conn|
             root["connections"].add(conn);
+        });
+        this.graph.iips.keysValuesDo({ |tgtStr, iip|
+            var tokens = tgtStr.split($ );
+            tokens.postln; tokens[0].postln;
+            root["connections"].add(Dictionary[
+                "tgt" -> Dictionary["port" -> tokens[0], "process" -> tokens[1]],
+                "data" -> iip,
+            ]);
         });
 
         root["inports"] = Dictionary.new();
