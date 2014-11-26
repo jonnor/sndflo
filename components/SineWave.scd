@@ -6,7 +6,8 @@ SynthDef("SineWave", {
     metadata: (
         description: "my filter",
         specs: (
-            freq: ControlSpec(20, 20000, \exp, 0.1, 2200, "Hz")
+            freq: ControlSpec(20, 20000, \exp, 0.1, 2200, "Hz"),
+            out: SndFlo.outAudioBusSpec,
         )
     )
 )

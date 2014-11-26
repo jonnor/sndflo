@@ -1,3 +1,3 @@
 require('coffee-script/register');
-require('./scflo.coffee').main()
+require('./sndflo.coffee').main()
 

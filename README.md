@@ -30,7 +30,7 @@ Install
 Running
 ---------
 
-    node scflo.js --verbose --user MY_FLOWHUB_UUID --id 125245
+    node sndflo.js --verbose --user MY_FLOWHUB_UUID
 
 Will start up SuperCollider, loading the sndflo runtime and FBP protocol bridge.
 On success should output something like 

@@ -5,10 +5,12 @@
 SndFloGraph : Object {
     var <nodes;
     var <connections;
-    var <library;
-    var nextBusNumber;
+    var <iips;
     var <inports;
     var <outports;
+
+    var <library;
+    var nextBusNumber;
 
     *new { arg lib;
         ^super.new.init(lib);
@@ -17,7 +19,8 @@ SndFloGraph : Object {
         library = lib;
         library.synthdefs.postln;
         nodes = Dictionary.new;
-        connections = Array;
+        connections = Dictionary.new; // busNumber -> Dictionary[ src -> .., tgt -> .. ]
+        iips = Dictionary.new; // "port src" -> Object
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
         inports = Dictionary.new;
         outports = Dictionary.new;
@@ -59,11 +62,26 @@ SndFloGraph : Object {
         nodes[tgtId].set(tgtPort.asSymbol, busForEdge);
         // Modify order-of-executioon so that target can hear source
         nodes[tgtId].moveAfter(nodes[srcId]);
+
+        // Store state
+        connections[busForEdge] = Dictionary[
+            "src" -> Dictionary [ "process" -> srcId, "port" -> srcPort ],
+            "tgt" -> Dictionary [ "process" -> tgtId, "port" -> tgtPort ],
+        ]
     }
     removeEdge { arg srcId, srcPort, tgtId, tgtPort;
+        var busForEdge = nil;
         "DEL % % -> % %\n".postf(srcId, srcPort.toUpper, tgtPort.toUpper, tgtId);
-        nodes[srcId].post; nodes[tgtId].postln;
+        connections.keysValuesDo({ |k, v|
+            var found = v["src"]["process"] == srcId &&
+                v["src"]["port"] == srcPort &&
+                v["tgt"]["process"] == tgtId &&
+                v["tgt"]["port"] == tgtPort;
+            busForEdge = if(found, { ^k }, { ^nil });
+        });
+        "BUS: ".post; busForEdge.postln;
 
+        connections[busForEdge] = nil;
         nodes[srcId].set(srcPort.asSymbol, SndFloLibrary.silentOut);
         nodes[tgtId].set(tgtPort.asSymbol, SndFloLibrary.silentIn);
     }
@@ -72,6 +90,7 @@ SndFloGraph : Object {
         "IIP: '%' -> % %\n".postf(data, tgtPort.toUpper, tgtId);
         // TODO: support other data than floats
         nodes[tgtId].set(tgtPort.asSymbol, data.asFloat);
+        iips[tgtPort+tgtId] = data.asFloat;
     }
     removeIIP { arg tgtId, tgtPort;
         // sets back default value
@@ -83,6 +102,7 @@ SndFloGraph : Object {
             specs = definition.metadata.specs;
             defaultValue = specs[tgtPort.asSymbol].default;
             tgtNode.set(tgtPort.asSymbol, defaultValue);
+            iips[tgtPort+tgtId] = nil;
 
             "DEL IIP -> % %\n".postf(tgtPort.toUpper, tgtId);
         });
@@ -129,6 +149,54 @@ SndFloNetwork : Object {
         inputGraph["outports"].keysValuesDo({ |name, internal|
             graph.addPort("out", name, internal["process"], internal["port"]);
         });
+    }
+
+    saveGraph {
+        var root = Dictionary.new();
+
+        root["processes"] = Dictionary.new();
+
+        this.graph.nodes.keysValuesDo({ |name,synth|
+            var proc = Dictionary[
+                "component" -> ("synth/"++synth.defName);
+            ];
+            root["processes"][name] = proc;
+        });
+
+        root["connections"] = List.new();
+        this.graph.connections.keysValuesDo({ |bus,conn|
+            root["connections"].add(conn);
+        });
+        this.graph.iips.keysValuesDo({ |tgtStr, iip|
+            var tokens = tgtStr.split($ );
+            tokens.postln; tokens[0].postln;
+            root["connections"].add(Dictionary[
+                "tgt" -> Dictionary["port" -> tokens[0], "process" -> tokens[1]],
+                "data" -> iip,
+            ]);
+        });
+
+        root["inports"] = Dictionary.new();
+        this.graph.inports.keysValuesDo({ |name, internal|
+            root["inports"][name] = Dictionary[
+                "process" -> internal["node"],
+                "port" -> internal["port"],
+            ];
+        });
+
+        root["outports"] = Dictionary.new();
+        this.graph.outports.keysValuesDo({ |name, internal|
+            root["outports"][name] = Dictionary[
+                "process" -> internal["node"],
+                "port" -> internal["port"],
+            ];
+        });
+
+        ^root;
+    }
+
+    toJSON {
+        ^SndFloJSON.stringify(this.saveGraph());
     }
 
 }

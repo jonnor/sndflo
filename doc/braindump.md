@@ -88,3 +88,9 @@ Random
 * https://pypi.python.org/pypi/SC/0.2
 
 
+Related
+========
+
+* https://github.com/mohayonao/CoffeeCollider
+* http://overtone.github.io
+

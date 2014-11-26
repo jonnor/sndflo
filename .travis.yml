@@ -10,5 +10,5 @@ script:
 - sudo ln -s `pwd` /usr/share/SuperCollider/Extensions/sndflo
 - jackd -d dummy &
 - sleep 3
-- export SCFLO_TESTS_VERBOSE=1
+- export SNDFLO_TESTS_VERBOSE=1
 - npm test
