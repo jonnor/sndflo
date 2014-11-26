@@ -45,7 +45,7 @@ SndFloUiConnection : Object {
 SndFloRuntime : Object {
     var connection;
     var <library;
-    var <>network;
+    var <network;
 
     *new { arg server, listenAddr;
         ^super.new.init(server,listenAddr)
@@ -59,6 +59,16 @@ SndFloRuntime : Object {
         library.on_component_changed = { |name|
             this.sendComponent(name);
         };
+    }
+
+    loadDefaultGraphFile { arg path;
+        var g = path.parseYAMLFile;
+        network = SndFloNetwork.new(this.library);
+        network.graph.on_ports_changed = {
+            this.sendPorts();
+        };
+        network.loadGraph(g);
+        network.start(true);
     }
 
     sendPorts {
@@ -189,6 +199,9 @@ SndFloRuntime : Object {
         { (protocol == "graph" && cmd == "clear") }
         {
             network = SndFloNetwork.new(library);
+            network.graph.on_ports_changed = {
+                this.sendPorts();
+            };
         }
         { (protocol == "graph" && cmd == "addnode") }
         {

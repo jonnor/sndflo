@@ -6,10 +6,7 @@ var f = {
         s.sync; // make sure library is loaded
         if (thisProcess.argv.size == 1, {
             // Load first arg as default graph
-            r.network = SndFloNetwork.new(r.library);
-            g = thisProcess.argv[0].parseYAMLFile;
-            r.network.loadGraph(g);
-            r.network.start(true);
+            r.loadDefaultGraphFile(thisProcess.argv[0]);
         });
         "sndflo-runtime running on port %\n".postf(NetAddr.localAddr.port);
     }).play;

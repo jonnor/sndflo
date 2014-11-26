@@ -8,6 +8,7 @@ SndFloGraph : Object {
     var <iips;
     var <inports;
     var <outports;
+    var >on_ports_changed;
 
     var <library;
     var nextBusNumber;
@@ -24,6 +25,7 @@ SndFloGraph : Object {
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
         inports = Dictionary.new;
         outports = Dictionary.new;
+        on_ports_changed = { |inports, outport| }; // override
     }
 
     addPort { arg direction, name, id, port;
@@ -31,12 +33,14 @@ SndFloGraph : Object {
         (direction == "in").if({ ports=inports }, { ports=outports });
         ports[name] = Dictionary[ "port" -> port, "node" -> id];
         "EXPORT %port: % => % %\n".postf(direction, name, port.toUpper, id);
+        on_ports_changed.value(this.inports, this.outports);
     }
     removePort { arg direction, name;
         var ports;
         (direction == "in").if({ ports=inports }, { ports=outports });
         ports[name] = nil;
         "UNEXPORT %port: %\n".postf(direction, name);
+        on_ports_changed.value(this.inports, this.outports);
     }
 
     addNode { arg id, component;
