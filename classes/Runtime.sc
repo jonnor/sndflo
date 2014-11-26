@@ -217,6 +217,22 @@ SndFloRuntime : Object {
             network.graph.removeEdge(payload["src"]["node"], payload["src"]["port"],
                 payload["tgt"]["node"], payload["tgt"]["port"]);
         }
+        { (protocol == "graph" && cmd == "addinport") }
+        {
+            network.graph.addPort("in", payload["public"], payload["node"], payload["port"]);
+        }
+        { (protocol == "graph" && cmd == "removeinport") }
+        {
+            network.graph.removePort("in", payload["public"]);
+        }
+        { (protocol == "graph" && cmd == "addoutport") }
+        {
+            network.graph.addPort("out", payload["public"], payload["node"], payload["port"]);
+        }
+        { (protocol == "graph" && cmd == "removeoutport") }
+        {
+            network.graph.removePort("out", payload["public"]);
+        }
         { (protocol == "network" && cmd == "start") }
         {
             // TODO: include timestamp
