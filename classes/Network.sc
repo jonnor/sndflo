@@ -17,7 +17,7 @@ SndFloGraph : Object {
         library = lib;
         library.synthdefs.postln;
         nodes = Dictionary.new;
-        connections = Array;
+        connections = Dictionary.new; // busNumber -> Dictionary[ src -> .., tgt -> .. ]
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
         inports = Dictionary.new;
         outports = Dictionary.new;
@@ -59,11 +59,26 @@ SndFloGraph : Object {
         nodes[tgtId].set(tgtPort.asSymbol, busForEdge);
         // Modify order-of-executioon so that target can hear source
         nodes[tgtId].moveAfter(nodes[srcId]);
+
+        // Store state
+        connections[busForEdge] = Dictionary[
+            "src" -> Dictionary [ "process" -> srcId, "port" -> srcPort ],
+            "tgt" -> Dictionary [ "process" -> tgtId, "port" -> tgtPort ],
+        ]
     }
     removeEdge { arg srcId, srcPort, tgtId, tgtPort;
         "DEL % % -> % %\n".postf(srcId, srcPort.toUpper, tgtPort.toUpper, tgtId);
-        nodes[srcId].post; nodes[tgtId].postln;
+        var busForEdge = nil;
+        connections.keysValuesDo({ |k, v|
+            var found = v["src"]["process"] == srcId &&
+                v["src"]["port"] == srcPort &&
+                v["tgt"]["process"] == tgtId &&
+                v["tgt"]["port"] == tgtPort;
+            busForEdge = if(found, { ^k }, { ^nil });
+        });
+        "BUS: ".post; busForEdge.postln;
 
+        connections[busForEdge] = nil;
         nodes[srcId].set(srcPort.asSymbol, SndFloLibrary.silentOut);
         nodes[tgtId].set(tgtPort.asSymbol, SndFloLibrary.silentIn);
     }
@@ -144,17 +159,8 @@ SndFloNetwork : Object {
         });
 
         root["connections"] = List.new();
-
-        /*
-        do({ |conn,idx|
-            var src = conn["src"];
-            var tgtPort = conn["tgt"]["port"];
-            var tgtNode = conn["tgt"]["process"];
-            if (src.notNil, {
-                graph.addEdge(conn["src"]["process"], conn["src"]["port"], tgtNode, tgtPort);
-            }, {
-                graph.addIIP(tgtNode, tgtPort, conn["data"]);
-            });
+        this.connections.nodes.keysValuesDo({ |bus,conn|
+            root["connections"].add(conn);
         });
 
         root["inports"] = Dictionary.new();
