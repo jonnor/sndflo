@@ -5,7 +5,8 @@ SynthDef("SawWave", {
     metadata: (
         description: "",
         specs: (
-            freq: ControlSpec(20, 20000, \exp, 0.1, 220, "Hz")
+            freq: ControlSpec(20, 20000, \exp, 0.1, 220, "Hz"),
+            out: SndFlo.outAudioBusSpec,
         )
     )
 )

@@ -3,6 +3,9 @@ SynthDef("AudioOut", {
     Out.ar(out, In.ar(in))
 },
     metadata: (
-        description: "Play out on soundcard"
+        description: "Play out on soundcard",
+        specs: (
+            in: SndFlo.inAudioBusSpec,
+        )
     )
 )
