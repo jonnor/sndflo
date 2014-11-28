@@ -65,7 +65,8 @@ SndFloGraph : Object {
         nodes[srcId].set(srcPort.asSymbol, busForEdge);
         nodes[tgtId].set(tgtPort.asSymbol, busForEdge);
         // Modify order-of-executioon so that target can hear source
-        nodes[tgtId].moveAfter(nodes[srcId]);
+        nodes[srcId].moveBefore(nodes[tgtId]);
+        // TODO: walk backwards towards front and apply to all
 
         // Store state
         connections[busForEdge] = Dictionary[
