@@ -1,5 +1,5 @@
 [Unit]
-Description=jackd
+Description=xvfb
 Wants=network.target
 Before=network.target
 
@@ -7,8 +7,7 @@ Before=network.target
 Type=simple
 WorkingDirectory=/home/jon/sndflo
 User=jon
-Environment="DISPLAY=:99"
-ExecStart=/usr/bin/jackd -d alsa -d hw:1
+ExecStart=/usr/bin/Xvfb :99 -screen 0 640x480x8 -nolisten tcp
 
 [Install]
 WantedBy=multi-user.target

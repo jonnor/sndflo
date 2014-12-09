@@ -9,7 +9,8 @@ Before=jackd.service
 Type=simple
 WorkingDirectory=/home/jon/sndflo
 User=jon
-ExecStart=/usr/bin/xvfb-run -a node sndflo.js --verbose --user 3f3a8187-0931-4611-8963-239c0dff1931 --host 10.0.0.10 --id 3a7dab01-dfec-4580-9f4a-ab13fbb97a1a
+Environment="DISPLAY=:99"
+ExecStart=/usr/bin/node sndflo.js --verbose --user 3f3a8187-0931-4611-8963-239c0dff1931 --host 10.0.0.10 --id 3a7dab01-dfec-4580-9f4a-ab13fbb97a1a
 
 [Install]
 WantedBy=multi-user.target
