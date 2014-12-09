@@ -45,7 +45,7 @@ SndFloUiConnection : Object {
 SndFloRuntime : Object {
     var connection;
     var <library;
-    var <>network;
+    var <network;
 
     *new { arg server, listenAddr;
         ^super.new.init(server,listenAddr)
@@ -59,6 +59,16 @@ SndFloRuntime : Object {
         library.on_component_changed = { |name|
             this.sendComponent(name);
         };
+    }
+
+    loadDefaultGraphFile { arg path;
+        var g = path.parseYAMLFile;
+        network = SndFloNetwork.new(this.library);
+        network.graph.on_ports_changed = {
+            this.sendPorts();
+        };
+        network.loadGraph(g);
+        network.start(true);
     }
 
     sendPorts {
@@ -150,6 +160,12 @@ SndFloRuntime : Object {
             connection.sendMessage("runtime", "runtime", info);
             this.sendPorts(nil);
         }
+        { (protocol == "runtime" && cmd == "packet") }
+        {
+            if(payload["event"] == "data", {
+                network.sendPacket(payload["port"], payload["payload"]);
+            });
+        }
         { (protocol == "component" && cmd == "list") }
         {
             library.synthdefs.keysValuesDo({ |name,synthdef|
@@ -189,6 +205,9 @@ SndFloRuntime : Object {
         { (protocol == "graph" && cmd == "clear") }
         {
             network = SndFloNetwork.new(library);
+            network.graph.on_ports_changed = {
+                this.sendPorts();
+            };
         }
         { (protocol == "graph" && cmd == "addnode") }
         {
@@ -216,6 +235,22 @@ SndFloRuntime : Object {
         {
             network.graph.removeEdge(payload["src"]["node"], payload["src"]["port"],
                 payload["tgt"]["node"], payload["tgt"]["port"]);
+        }
+        { (protocol == "graph" && cmd == "addinport") }
+        {
+            network.graph.addPort("in", payload["public"], payload["node"], payload["port"]);
+        }
+        { (protocol == "graph" && cmd == "removeinport") }
+        {
+            network.graph.removePort("in", payload["public"]);
+        }
+        { (protocol == "graph" && cmd == "addoutport") }
+        {
+            network.graph.addPort("out", payload["public"], payload["node"], payload["port"]);
+        }
+        { (protocol == "graph" && cmd == "removeoutport") }
+        {
+            network.graph.removePort("out", payload["public"]);
         }
         { (protocol == "network" && cmd == "start") }
         {

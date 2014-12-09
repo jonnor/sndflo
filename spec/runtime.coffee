@@ -108,6 +108,20 @@ describe 'FBP runtime API,', () ->
                 done()
             ui.send "component", "getsource", { name: 'default/main' }
 
+    describe 'removing a port', ->
+        it 'should return updated ports list', (done) ->
+            ui.send "graph", "removeinport", { public: 'freq' }
+            ui.once 'runtime-ports-changed', (info) ->
+                chai.expect(info.inPorts).to.be.an 'array'
+                chai.expect(info.inPorts).to.have.length 1
+                done()
+    describe 'adding a port', ->
+        it 'should return updated ports list', (done) ->
+            ui.send "graph", "addinport", { public: 'freq', node: 'f', port: 'freq' }
+            ui.once 'runtime-ports-changed', (info) ->
+                chai.expect(info.inPorts).to.be.an 'array'
+                chai.expect(info.inPorts).to.have.length 2
+                done()
 
     describe.skip 'sending packet in', ->
         graphName = 'default/main'

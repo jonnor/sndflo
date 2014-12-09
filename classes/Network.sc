@@ -8,6 +8,7 @@ SndFloGraph : Object {
     var <iips;
     var <inports;
     var <outports;
+    var >on_ports_changed;
 
     var <library;
     var nextBusNumber;
@@ -24,6 +25,7 @@ SndFloGraph : Object {
         nextBusNumber = 20; // Avoid hardware busses. FIXME: unhardcode
         inports = Dictionary.new;
         outports = Dictionary.new;
+        on_ports_changed = { |inports, outport| }; // override
     }
 
     addPort { arg direction, name, id, port;
@@ -31,12 +33,14 @@ SndFloGraph : Object {
         (direction == "in").if({ ports=inports }, { ports=outports });
         ports[name] = Dictionary[ "port" -> port, "node" -> id];
         "EXPORT %port: % => % %\n".postf(direction, name, port.toUpper, id);
+        on_ports_changed.value(this.inports, this.outports);
     }
     removePort { arg direction, name;
         var ports;
         (direction == "in").if({ ports=inports }, { ports=outports });
         ports[name] = nil;
         "UNEXPORT %port: %\n".postf(direction, name);
+        on_ports_changed.value(this.inports, this.outports);
     }
 
     addNode { arg id, component;
@@ -61,7 +65,8 @@ SndFloGraph : Object {
         nodes[srcId].set(srcPort.asSymbol, busForEdge);
         nodes[tgtId].set(tgtPort.asSymbol, busForEdge);
         // Modify order-of-executioon so that target can hear source
-        nodes[tgtId].moveAfter(nodes[srcId]);
+        nodes[srcId].moveBefore(nodes[tgtId]);
+        // TODO: walk backwards towards front and apply to all
 
         // Store state
         connections[busForEdge] = Dictionary[
@@ -124,6 +129,13 @@ SndFloNetwork : Object {
         graph.nodes.keysValuesDo({ |key,value|
             value.run(run);
         });
+    }
+
+    sendPacket { arg public, value;
+        var internal = graph.inports[public];
+        var synth = graph.nodes[internal["node"]];
+        synth.set(internal["port"].asSymbol, value.asFloat);
+        "PACKET % %\n".postf(public, value);
     }
 
     loadGraph { arg inputGraph;
