@@ -27,6 +27,8 @@ Install
     mkdir -p ~/.local/share/SuperCollider/Extensions || true
     ln -s `pwd` ~/.local/share/SuperCollider/Extensions/sndflo
 
+    npm install -g node-gyp
+    npm install
 Running
 ---------
 
