@@ -23,18 +23,22 @@ Install
     git clone https://github.com/jonnor/sndflo.git
     cd sndflo
 
-    # Install as SuperCollider extension, see http://doc.sccode.org/Guides/UsingExtensions.html
+    # Install as SuperCollider extension, ref http://doc.sccode.org/Guides/UsingExtensions.html
     # On Linux
     mkdir -p ~/.local/share/SuperCollider/Extensions || true
     ln -s `pwd` ~/.local/share/SuperCollider/Extensions/sndflo
     # On Mac OSX
-    mkdir -p ~/Library/Application Support/SuperCollider/Extensions || true
-    ln -s `pwd` ~/Library/Application Support/SuperCollider/Extensions/sndflo
+    mkdir -p "$HOME/Library/Application Support/SuperCollider/Extensions" || true
+    ln -s `pwd` "$HOME/Library/Application Support/SuperCollider/Extensions/sndflo"
 
     npm install -g node-gyp
     npm install
+
 Running
 ---------
+
+    # For Mac OSX only, specify where sclang is
+    export PATH=$PATH:/Applications/SuperCollider/SuperCollider.app/Contents/Resources/
 
     node sndflo.js --verbose --user MY_FLOWHUB_UUID
 
