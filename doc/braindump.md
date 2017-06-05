@@ -48,6 +48,20 @@ And of course, for combined audiovisual works, having both audio and visuals be
 created/driven the same way is a killer feature!
 
 
+## Communicating directly to scsynth (server)
+The SuperCollider frontend (sclang) communicates with the server using commands sent over OSC (Open Sound Control).
+This would make it possible to create synths and audio processing pipelines directly, without
+
+References
+
+* [Supercollider Tutorial - Node Messaging or Direct Server Commands](https://www.youtube.com/watch?v=ZZ1Lwq9hGg4).
+`s.queryAllNodes` can be used to show current node-tree on server.
+* [SuperCollider Server Command Reference](http://doc.sccode.org/Reference/Server-Command-Reference.html), describes
+all the messages and their OSC format.
+* [supercolliderjs](https://www.npmjs.com/package/supercolliderjs) JavaScript library for talking to scsynth server,
+and executing functions in the sclang interpreter.
+
+
 Streaming to browser
 ---------------------
 For an integrated solution in Flowhub, we need to be able to send the live sound stream
