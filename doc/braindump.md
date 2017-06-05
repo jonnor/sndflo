@@ -62,6 +62,28 @@ all the messages and their OSC format.
 and executing functions in the sclang interpreter.
 
 
+## SuperCollider and MsgFlo
+
+To communicate with other systems, sndflo currently use the FBP runtime protocol and the 'remote subgraph' feature in NoFlo.
+This imposes a strict hierachicy where NoFlo (in browser or node.js) must be on the upper level.
+Especially problematic when one wants to have multiple consumers of the same data, like a virtual device display in a browser.
+
+Since then MsgFlo has been created, which is specifically for connecting together different systems, using standard message brokers.
+
+scsynth -> MsgFlo bridge (using MQTT). Creates a Participant, and exposes inports for certain node/synth properties.
+Probably needs ability load synthdefs and/or instantiate a set of synths. Maybe by executing a `.scd` file.
+Should connect to a running scsynth server.
+Primary usage probably as a commandline tool, with arguments/options configuring the particular use.
+Should be possible to have multiple using the same scsynth server.
+
+Could also allow a 'bundled' input, where one can send a JSON object with key/value pairs to set a bunch of properties at once.
+
+Typical uses would be to:
+
+* create interactive installations. Ex: trigger/influence sound from sensors
+* adjust processing parameters based on user input
+* create custom musical instruments
+
 Streaming to browser
 ---------------------
 For an integrated solution in Flowhub, we need to be able to send the live sound stream
