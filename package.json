@@ -30,6 +30,7 @@
     "noflo": "~0.4.0",
     "osc-min": "~0.0.12",
     "pkginfo": "~0.3.0",
+    "supercolliderjs": "^0.14.2",
     "websocket": "^1.0.8"
   },
   "devDependencies": {
